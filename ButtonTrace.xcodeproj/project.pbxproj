@@ -15,6 +15,7 @@
 		29F5A3D81E60AEA2003A6EEA /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 29F5A3D61E60AEA2003A6EEA /* Main.storyboard */; };
 		29F5A3DA1E60AEA2003A6EEA /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 29F5A3D91E60AEA2003A6EEA /* Assets.xcassets */; };
 		29F5A3DD1E60AEA2003A6EEA /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 29F5A3DB1E60AEA2003A6EEA /* LaunchScreen.storyboard */; };
+		29F5A3E51E60B46B003A6EEA /* GameLevel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 29F5A3E41E60B46B003A6EEA /* GameLevel.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -28,6 +29,7 @@
 		29F5A3D91E60AEA2003A6EEA /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		29F5A3DC1E60AEA2003A6EEA /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		29F5A3DE1E60AEA2003A6EEA /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		29F5A3E41E60B46B003A6EEA /* GameLevel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GameLevel.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -69,6 +71,7 @@
 				29F5A3D91E60AEA2003A6EEA /* Assets.xcassets */,
 				29F5A3DB1E60AEA2003A6EEA /* LaunchScreen.storyboard */,
 				29F5A3DE1E60AEA2003A6EEA /* Info.plist */,
+				29F5A3E41E60B46B003A6EEA /* GameLevel.swift */,
 			);
 			path = ButtonTrace;
 			sourceTree = "<group>";
@@ -147,6 +150,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				29F5A3E51E60B46B003A6EEA /* GameLevel.swift in Sources */,
 				29F5A3D31E60AEA2003A6EEA /* GameScene.swift in Sources */,
 				29F5A3D51E60AEA2003A6EEA /* GameViewController.swift in Sources */,
 				29F5A3CD1E60AEA2003A6EEA /* AppDelegate.swift in Sources */,

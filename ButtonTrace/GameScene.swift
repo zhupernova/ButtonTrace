@@ -35,8 +35,15 @@ class GameScene: SKScene {
                                               SKAction.fadeOut(withDuration: 0.5),
                                               SKAction.removeFromParent()]))
         }
+        
+        renderGame()
     }
     
+    func renderGame(){
+        let line = LineLevel()
+        //line.size = CGSize(width:300,height:300)
+        self.addChild(line)
+    }
     
     func touchDown(atPoint pos : CGPoint) {
         if let n = self.spinnyNode?.copy() as! SKShapeNode? {
