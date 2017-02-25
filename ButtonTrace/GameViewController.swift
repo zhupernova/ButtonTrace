@@ -10,6 +10,9 @@ import UIKit
 import SpriteKit
 import GameplayKit
 
+
+
+
 class GameViewController: UIViewController {
 
     override func viewDidLoad() {
@@ -26,9 +29,9 @@ class GameViewController: UIViewController {
             }
             
             view.ignoresSiblingOrder = true
-            
             view.showsFPS = true
             view.showsNodeCount = true
+            view.showsPhysics = true
         }
     }
 
