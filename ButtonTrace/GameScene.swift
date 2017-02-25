@@ -86,14 +86,6 @@ class GameScene: SKScene, SKPhysicsContactDelegate{
         touchIndicator.strokeColor = UIColor.clear
         touchIndicator.zPosition = 2
         touchIndicator.position = CGPoint(x: -1000, y: -1000)
-        touchIndicator.name = "touch"
-        let ballPhysics = SKPhysicsBody.init(circleOfRadius: touchIndicator.frame.size.width/2)
-        touchIndicator.physicsBody = ballPhysics
-        ballPhysics.usesPreciseCollisionDetection = true
-        ballPhysics.categoryBitMask = GameConstants.touchCategory
-        ballPhysics.collisionBitMask = 0
-        ballPhysics.contactTestBitMask = GameLevelConstants.levelCategory
-        ballPhysics.affectedByGravity  = false
         self.addChild(touchIndicator)
         
         //the ball we're trying to track
@@ -194,10 +186,10 @@ class GameScene: SKScene, SKPhysicsContactDelegate{
         //let xDist = lastTrackedPoint.x - pos.x
         //let yDist = lastTrackedPoint.y - pos.y
         //let velocity = CGFloat(sqrt((xDist * xDist) + (yDist * yDist)))
-        lastTrackedPoint = pos
+        //lastTrackedPoint = pos
         //&& velocity < GameConstants.maxVelocity
         if isTrackingBall {
-            if contactsBegan > 0 {
+            if currentLevel!.contains(pos) {
                 ballNode.position = pos
                 //check if we've moved the ball into the final position
                 if touchIndicator.frame.contains(currentLevel!.getFinalPosition()) {
