@@ -14,7 +14,7 @@ struct GameConstants {
     static let loseColor: UIColor = UIColor.init(red: 227.0/255.0, green: 86.0/255.0, blue: 45.0/255.0, alpha:1.0)
     static let backgroundColor: UIColor = UIColor.init(red: 242.0/255.0, green: 241.0/255.0, blue: 246.0/255.0, alpha: 1.0)
     static let touchCategory: UInt32 = 0x1 << 0
-    static let touchRadius: CGFloat = 20
+    static let touchRadius: CGFloat = 15
     static let ballRadius: CGFloat = 50
     static let maxVelocity: CGFloat = 85
 }
@@ -82,7 +82,8 @@ class GameScene: SKScene, SKPhysicsContactDelegate{
         //initialize physics
         self.physicsWorld.contactDelegate = self
         //invisible indicator representing touch area
-        touchIndicator.fillColor = UIColor.blue
+        touchIndicator.fillColor = UIColor.clear
+        touchIndicator.strokeColor = UIColor.clear
         touchIndicator.zPosition = 2
         touchIndicator.position = CGPoint(x: -1000, y: -1000)
         touchIndicator.name = "touch"
@@ -190,9 +191,9 @@ class GameScene: SKScene, SKPhysicsContactDelegate{
     func touchMoved(toPoint pos : CGPoint) {
         touchIndicator.position = pos
        
-        let xDist = lastTrackedPoint.x - pos.x
-        let yDist = lastTrackedPoint.y - pos.y
-        let velocity = CGFloat(sqrt((xDist * xDist) + (yDist * yDist)))
+        //let xDist = lastTrackedPoint.x - pos.x
+        //let yDist = lastTrackedPoint.y - pos.y
+        //let velocity = CGFloat(sqrt((xDist * xDist) + (yDist * yDist)))
         lastTrackedPoint = pos
         //&& velocity < GameConstants.maxVelocity
         if isTrackingBall {
