@@ -14,7 +14,7 @@ struct GameConstants {
     static let loseColor: UIColor = UIColor.init(red: 227.0/255.0, green: 86.0/255.0, blue: 45.0/255.0, alpha:1.0)
     static let backgroundColor: UIColor = UIColor.init(red: 242.0/255.0, green: 241.0/255.0, blue: 246.0/255.0, alpha: 1.0)
     static let touchCategory: UInt32 = 0x1 << 0
-    static let touchRadius: CGFloat = 15
+    static let touchRadius: CGFloat = 35
     static let ballRadius: CGFloat = 50
     static let maxVelocity: CGFloat = 85
 }
@@ -30,9 +30,15 @@ class GameScene: SKScene, SKPhysicsContactDelegate{
     private var levelIndex: Int
     private var currentLevel: GameLevel?
     
+    //level size adjuster
+    private var lessLabel: SKLabelNode
+    private var sizeLabel: SKLabelNode
+    private var moreLabel: SKLabelNode
+    private var sizeOffset: CGFloat
+    private var reloadButton: SKSpriteNode
+    
     //ball tracking parameters
     private var isTrackingBall: Bool
-    private var contactsBegan: Int
     private var lastTrackedPoint: CGPoint
     
     //timer display
@@ -46,10 +52,14 @@ class GameScene: SKScene, SKPhysicsContactDelegate{
         touchIndicator = SKShapeNode.init(circleOfRadius: GameConstants.touchRadius)
         ballNode = SKShapeNode.init(circleOfRadius: GameConstants.ballRadius)
         timerLabel = SKLabelNode(fontNamed: "TrebuchetMS")
+        sizeLabel = SKLabelNode(fontNamed: "TrebuchetMS")
         timeSinceCurrentLevel = 0
         levelIndex = 0
-        contactsBegan = 0
         lastTrackedPoint = CGPoint.zero
+        sizeOffset = 0
+        lessLabel = SKLabelNode(fontNamed: "TrebuchetMS-Bold")
+        moreLabel = SKLabelNode(fontNamed: "TrebuchetMS-Bold")
+        reloadButton = SKSpriteNode(imageNamed: "refresh")
         levels = [LetterZLevel(),  HLineLevel(), VLineLevel(), LReversedLevel(), CounterCircleLevel()]
         super.init()
     }
@@ -60,10 +70,14 @@ class GameScene: SKScene, SKPhysicsContactDelegate{
         touchIndicator = SKShapeNode.init(circleOfRadius: GameConstants.touchRadius)
         ballNode = SKShapeNode.init(circleOfRadius: GameConstants.ballRadius)
         timerLabel = SKLabelNode(fontNamed: "TrebuchetMS")
+        sizeLabel = SKLabelNode(fontNamed: "TrebuchetMS")
         timeSinceCurrentLevel = 0
         levelIndex = 0
-        contactsBegan = 0
         lastTrackedPoint = CGPoint.zero
+        sizeOffset = 0
+        lessLabel = SKLabelNode(fontNamed: "TrebuchetMS-Bold")
+        moreLabel = SKLabelNode(fontNamed: "TrebuchetMS-Bold")
+        reloadButton = SKSpriteNode(imageNamed: "refresh")
         levels = [LetterZLevel(),  HLineLevel(), VLineLevel(), LReversedLevel(), CounterCircleLevel()]
         super.init(coder: aDecoder)
     }
@@ -96,10 +110,31 @@ class GameScene: SKScene, SKPhysicsContactDelegate{
         
         timerLabel.fontColor  = UIColor.black
         timerLabel.verticalAlignmentMode = .bottom
-        timerLabel.position = CGPoint(x: 0, y: self.size.height/2 - 50) //10px above bottom
+        timerLabel.position = CGPoint(x: 0, y: self.size.height/2 - 50) //50px below top
         self.addChild(timerLabel)
         
-        beginNextLevel()
+        sizeLabel.fontColor  = UIColor.black
+        sizeLabel.position = CGPoint(x: 0, y: -self.size.height/2 + 50) //50 px above bottom
+        self.addChild(sizeLabel)
+        
+        lessLabel.text = "-"
+        lessLabel.fontColor = UIColor.blue
+        lessLabel.horizontalAlignmentMode  = .right
+        lessLabel.position = CGPoint(x: -50, y: -self.size.height/2 + 50)
+        self.addChild(lessLabel)
+        
+        moreLabel.text = "+"
+        moreLabel.fontColor = UIColor.red
+        moreLabel.horizontalAlignmentMode  = .left
+        moreLabel.position = CGPoint(x: 50, y: -self.size.height/2 + 50)
+        self.addChild(moreLabel)
+        
+        reloadButton.position = CGPoint(x: 150, y: -self.size.height/2 + 50)
+        reloadButton.anchorPoint = CGPoint(x: 0.5, y: 0.5)
+        reloadButton.size = CGSize(width:50, height:50)
+        reloadButton.isUserInteractionEnabled = false
+        self.addChild(reloadButton)
+        reloadLevel()
     }
     
     func animateWin(){
@@ -118,15 +153,16 @@ class GameScene: SKScene, SKPhysicsContactDelegate{
             duration: 0.5))
     }
     
+    func reloadLevel(){
+        beginLevel(level: levels[levelIndex])
+    }
     
     func beginNextLevel(){
-        
-        contactsBegan = 0
-        beginLevel(level: levels[levelIndex])
         levelIndex += 1
         if levelIndex >= levels.count {
             levelIndex = 0
         }
+        beginLevel(level: levels[levelIndex])
     }
     
     func beginLevel(level:GameLevel){
@@ -136,6 +172,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate{
         }
         currentLevel = level
         self.addChild(currentLevel!)
+        currentLevel!.setLineWidthModifier(modifier: sizeOffset)
         currentLevel!.zPosition = 0
         ballNode.position = currentLevel!.getInitialPosition()
         shouldRefreshTimeInterval = true
@@ -143,31 +180,32 @@ class GameScene: SKScene, SKPhysicsContactDelegate{
     }
     
     
-    //contact functions
-    func didBegin(_ contact: SKPhysicsContact) {
-        
-        if contact.bodyB.categoryBitMask == GameConstants.touchCategory &&
-            contact.bodyA.categoryBitMask == GameLevelConstants.levelCategory {
-            contactsBegan += 1
-        }
-        else if contact.bodyA.categoryBitMask == GameConstants.touchCategory &&
-            contact.bodyB.categoryBitMask == GameLevelConstants.levelCategory {
-            contactsBegan += 1
-        }
-    }
-    func didEnd(_ contact: SKPhysicsContact) {
-        if contact.bodyB.categoryBitMask == GameConstants.touchCategory &&
-            contact.bodyA.categoryBitMask == GameLevelConstants.levelCategory {
-            contactsBegan -= 1
-        }
-        else if contact.bodyA.categoryBitMask == GameConstants.touchCategory &&
-            contact.bodyB.categoryBitMask == GameLevelConstants.levelCategory {
-            contactsBegan -= 1
-        }
-    }
+
     
     //touch functions
     func touchDown(atPoint pos : CGPoint) {
+        //check for size adjustment actions
+        let touch = reloadButton.contains(pos) ? 1 : 0
+        let less = lessLabel.contains(pos) ? 1 : 0
+        let more = moreLabel.contains(pos) ? 1 : 0
+        NSLog("%d,%d,%d", touch, less, more)
+        if reloadButton.contains(pos){
+            reloadLevel()
+        }
+        
+        else if lessLabel.contains(pos){
+            if sizeOffset > GameLevelConstants.levelLineWidth {
+                sizeOffset -= 1
+            }
+        }
+        
+        else if moreLabel.contains(pos){
+            sizeOffset += 1
+        }
+        
+        
+        
+        
         //the beginning of touch must start on the red ball
         if ballNode.frame.contains(pos) {
             //we picked up the ball. we can begin
@@ -200,7 +238,6 @@ class GameScene: SKScene, SKPhysicsContactDelegate{
                 }
             } else {
                 //you lost the ball
-                contactsBegan = 0
                 isTrackingBall = false
                 animateLoss()
                 ballNode.position = currentLevel!.getInitialPosition()
@@ -211,7 +248,6 @@ class GameScene: SKScene, SKPhysicsContactDelegate{
     
     func touchUp(atPoint pos : CGPoint) {
         isTrackingBall = false
-        contactsBegan = 0
         touchIndicator.position = CGPoint(x:-1000, y:-1000)//move touch offscreen to avoid physicsbody errors
         ballNode.position = currentLevel!.getInitialPosition()
     }
@@ -234,6 +270,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate{
     
     override func update(_ currentTime: TimeInterval) {
         // Called before each frame is rendered
+        sizeLabel.text = String(format: "%.02f.", GameLevelConstants.levelLineWidth + sizeOffset)
         if shouldRefreshTimeInterval {
             timeSinceCurrentLevel = currentTime
             shouldRefreshTimeInterval = false
