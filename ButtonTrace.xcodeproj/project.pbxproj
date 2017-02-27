@@ -7,8 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		29EF8B611E63936D00113FDA /* Fabric.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 29EF8B5F1E63936D00113FDA /* Fabric.framework */; };
-		29EF8B621E63936D00113FDA /* Crashlytics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 29EF8B601E63936D00113FDA /* Crashlytics.framework */; };
+		29EF8B661E63DACA00113FDA /* Fabric.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 29EF8B641E63DACA00113FDA /* Fabric.framework */; };
+		29EF8B671E63DACA00113FDA /* Crashlytics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 29EF8B651E63DACA00113FDA /* Crashlytics.framework */; };
 		29F5A3CD1E60AEA2003A6EEA /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 29F5A3CC1E60AEA2003A6EEA /* AppDelegate.swift */; };
 		29F5A3CF1E60AEA2003A6EEA /* GameScene.sks in Resources */ = {isa = PBXBuildFile; fileRef = 29F5A3CE1E60AEA2003A6EEA /* GameScene.sks */; };
 		29F5A3D11E60AEA2003A6EEA /* Actions.sks in Resources */ = {isa = PBXBuildFile; fileRef = 29F5A3D01E60AEA2003A6EEA /* Actions.sks */; };
@@ -21,8 +21,8 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		29EF8B5F1E63936D00113FDA /* Fabric.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = Fabric.framework; sourceTree = "<group>"; };
-		29EF8B601E63936D00113FDA /* Crashlytics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = Crashlytics.framework; sourceTree = "<group>"; };
+		29EF8B641E63DACA00113FDA /* Fabric.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = Fabric.framework; sourceTree = "<group>"; };
+		29EF8B651E63DACA00113FDA /* Crashlytics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = Crashlytics.framework; sourceTree = "<group>"; };
 		29F5A3C91E60AEA2003A6EEA /* ButtonTrace.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ButtonTrace.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		29F5A3CC1E60AEA2003A6EEA /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		29F5A3CE1E60AEA2003A6EEA /* GameScene.sks */ = {isa = PBXFileReference; lastKnownFileType = file.sks; path = GameScene.sks; sourceTree = "<group>"; };
@@ -41,8 +41,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				29EF8B621E63936D00113FDA /* Crashlytics.framework in Frameworks */,
-				29EF8B611E63936D00113FDA /* Fabric.framework in Frameworks */,
+				29EF8B671E63DACA00113FDA /* Crashlytics.framework in Frameworks */,
+				29EF8B661E63DACA00113FDA /* Fabric.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -52,6 +52,8 @@
 		29F5A3C01E60AEA2003A6EEA = {
 			isa = PBXGroup;
 			children = (
+				29EF8B641E63DACA00113FDA /* Fabric.framework */,
+				29EF8B651E63DACA00113FDA /* Crashlytics.framework */,
 				29F5A3CB1E60AEA2003A6EEA /* ButtonTrace */,
 				29F5A3CA1E60AEA2003A6EEA /* Products */,
 			);
@@ -68,8 +70,6 @@
 		29F5A3CB1E60AEA2003A6EEA /* ButtonTrace */ = {
 			isa = PBXGroup;
 			children = (
-				29EF8B5F1E63936D00113FDA /* Fabric.framework */,
-				29EF8B601E63936D00113FDA /* Crashlytics.framework */,
 				29F5A3CC1E60AEA2003A6EEA /* AppDelegate.swift */,
 				29F5A3CE1E60AEA2003A6EEA /* GameScene.sks */,
 				29F5A3D01E60AEA2003A6EEA /* Actions.sks */,
@@ -94,7 +94,7 @@
 				29F5A3C51E60AEA2003A6EEA /* Sources */,
 				29F5A3C61E60AEA2003A6EEA /* Frameworks */,
 				29F5A3C71E60AEA2003A6EEA /* Resources */,
-				29EF8B5E1E63934400113FDA /* ShellScript */,
+				29EF8B631E63D7FC00113FDA /* ShellScript */,
 			);
 			buildRules = (
 			);
@@ -156,7 +156,7 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
-		29EF8B5E1E63934400113FDA /* ShellScript */ = {
+		29EF8B631E63D7FC00113FDA /* ShellScript */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -167,7 +167,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "./Fabric.framework/run be853eb67268e02d1f68c1bff75bc221aa08b1ec 7b740e254d4aa9fe5ca0e701d3d8b4771c0ce2b14042abe02d89310768796885";
+			shellScript = "./Fabric.framework/run 37b6d55a622199643db3aa5d3e57a614b9a4c6d0 dbb85211c74e865d204aeefbe04e4d6774dd9a6fa68cf4f8bc99ae1841fc4a39";
 		};
 /* End PBXShellScriptBuildPhase section */
 
@@ -306,6 +306,7 @@
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)/ButtonTrace",
+					"$(PROJECT_DIR)",
 				);
 				INFOPLIST_FILE = ButtonTrace/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 9.3;
@@ -324,6 +325,7 @@
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)/ButtonTrace",
+					"$(PROJECT_DIR)",
 				);
 				INFOPLIST_FILE = ButtonTrace/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 9.3;

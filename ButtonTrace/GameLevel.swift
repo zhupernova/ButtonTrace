@@ -9,7 +9,7 @@
 import Foundation
 import SpriteKit
 import GameplayKit
-
+import Crashlytics 
 struct GameLevelConstants {
     static let levelLineWidth: CGFloat = 35
     static let defaultColor: UIColor = UIColor.init(red:225.0/255.0, green:222.0/255.0, blue:217.0/255.0, alpha:1.0)
@@ -37,6 +37,9 @@ class GameLevel:SKShapeNode{
         self.strokeColor = GameLevelConstants.defaultColor
         self.fillColor = GameLevelConstants.defaultColor
         self.lineCap = .round
+        
+        
+        Crashlytics.sharedInstance().crash()
         //setSize()
         //self.joints = self.getJoints()
         //render()
