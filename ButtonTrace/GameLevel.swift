@@ -15,6 +15,7 @@ struct GameLevelConstants {
     static let defaultColor: UIColor = UIColor.init(red:225.0/255.0, green:222.0/255.0, blue:217.0/255.0, alpha:1.0)
     static let levelCategory: UInt32 = 0x1 << 1
     static let levelsInset: CGFloat = 10
+    static let screenWidth: CGFloat = 300
 }
 
 
@@ -113,7 +114,7 @@ class GameLevel:SKShapeNode{
 class HLineLevel:GameLevel{
     override func setSize(){
         // sets size of the object
-        self.levelWidth = 300
+        self.levelWidth = GameLevelConstants.screenWidth
         self.levelHeight = getLineWidth()
     }
     override public func getInitialPosition() -> CGPoint {
@@ -185,8 +186,8 @@ class LReversedLevel: GameLevel {
 class LetterZLevel: GameLevel{
     override func setSize(){
         // sets size of the object
-        self.levelWidth = 300
-        self.levelHeight = 300
+        self.levelWidth = GameLevelConstants.screenWidth
+        self.levelHeight = GameLevelConstants.screenWidth
     }
 
     override public func getInitialPosition() -> CGPoint {
@@ -243,8 +244,8 @@ class LetterZLevel: GameLevel{
 class CounterCircleLevel: GameLevel{
     override func setSize(){
         // sets size of the object
-        self.levelWidth = 300
-        self.levelHeight = 300
+        self.levelWidth = GameLevelConstants.screenWidth
+        self.levelHeight = GameLevelConstants.screenWidth
     }
     
     

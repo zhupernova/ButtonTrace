@@ -114,24 +114,25 @@ class GameScene: SKScene, SKPhysicsContactDelegate{
         self.addChild(timerLabel)
         
         sizeLabel.fontColor  = UIColor.black
-        sizeLabel.position = CGPoint(x: 0, y: -self.size.height/2 + 50) //50 px above bottom
+        sizeLabel.position = CGPoint(x: 0, y: -self.size.height/2 + 70) //50 px above bottom
         self.addChild(sizeLabel)
         
         lessLabel.text = "-"
         lessLabel.fontColor = UIColor.blue
+        lessLabel.fontSize = 100
         lessLabel.horizontalAlignmentMode  = .right
-        lessLabel.position = CGPoint(x: -50, y: -self.size.height/2 + 50)
+        lessLabel.position = CGPoint(x: -75, y: -self.size.height/2 + 50)
         self.addChild(lessLabel)
         
         moreLabel.text = "+"
         moreLabel.fontColor = UIColor.red
+        moreLabel.fontSize = 100
         moreLabel.horizontalAlignmentMode  = .left
-        moreLabel.position = CGPoint(x: 50, y: -self.size.height/2 + 50)
+        moreLabel.position = CGPoint(x: 75, y: -self.size.height/2 + 50)
         self.addChild(moreLabel)
         
-        reloadButton.position = CGPoint(x: 150, y: -self.size.height/2 + 50)
-        reloadButton.anchorPoint = CGPoint(x: 0.5, y: 0.5)
-        reloadButton.size = CGSize(width:50, height:50)
+        reloadButton.position = CGPoint(x: 175, y: -self.size.height/2 + 75)
+        reloadButton.size = CGSize(width:75, height:75)
         reloadButton.isUserInteractionEnabled = false
         self.addChild(reloadButton)
         reloadLevel()
@@ -270,7 +271,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate{
     
     override func update(_ currentTime: TimeInterval) {
         // Called before each frame is rendered
-        sizeLabel.text = String(format: "%.02f.", GameLevelConstants.levelLineWidth + sizeOffset)
+        sizeLabel.text = String(format: "%.02f", GameLevelConstants.levelLineWidth + sizeOffset)
         if shouldRefreshTimeInterval {
             timeSinceCurrentLevel = currentTime
             shouldRefreshTimeInterval = false
