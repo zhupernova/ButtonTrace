@@ -11,11 +11,11 @@ import SpriteKit
 import GameplayKit
 
 struct GameLevelConstants {
-    static let levelLineWidth: CGFloat = 35
+    static let levelLineWidth: CGFloat = 50
     static let defaultColor: UIColor = UIColor.init(red:225.0/255.0, green:222.0/255.0, blue:217.0/255.0, alpha:1.0)
     static let levelCategory: UInt32 = 0x1 << 1
-    static let levelsInset: CGFloat = 10
-    static let screenWidth: CGFloat = 300
+    static let levelsInset: CGFloat = 40
+    static let screenWidth: CGFloat = 520
 }
 
 
@@ -37,10 +37,6 @@ class GameLevel:SKShapeNode{
         self.strokeColor = GameLevelConstants.defaultColor
         self.fillColor = GameLevelConstants.defaultColor
         self.lineCap = .round
-        
-        //setSize()
-        //self.joints = self.getJoints()
-        //render()
     }
     
     required init?(coder aDecoder: NSCoder) {
@@ -49,9 +45,6 @@ class GameLevel:SKShapeNode{
         self.levelHeight = 0
         self.lineWidthModifier = 0
         super.init(coder:aDecoder)
-        //setSize()
-        //self.joints = self.getJoints()
-        //render()
     }
 
     func setSize(){
@@ -122,7 +115,7 @@ class HLineLevel:GameLevel{
         return CGPoint(x: -self.levelWidth/2+GameLevelConstants.levelsInset, y: 0)
     }
     override public func getFinalPosition() -> CGPoint {
-        return CGPoint(x: self.levelWidth/2-GameLevelConstants.levelsInset, y: 0)
+        return CGPoint(x: self.levelWidth/2-GameLevelConstants.levelsInset/2, y: 0)
     }
     
     override func getJoints()->[CGPoint]{
@@ -140,21 +133,21 @@ class VLineLevel:HLineLevel{
     override func setSize(){
         // sets size of the object
         self.levelWidth = getLineWidth()
-        self.levelHeight = 550
+        self.levelHeight = 720
     }
     override public func getInitialPosition() -> CGPoint {
         return CGPoint(x: 0, y: self.levelHeight/2-GameLevelConstants.levelsInset)
     }
     override public func getFinalPosition() -> CGPoint {
-        return CGPoint(x: 0, y: -self.levelHeight/2+GameLevelConstants.levelsInset)
+        return CGPoint(x: 0, y: -self.levelHeight/2+GameLevelConstants.levelsInset/2)
     }
     
 }
 class LReversedLevel: GameLevel {
     override func setSize(){
         // sets size of the object
-        self.levelWidth = 230
-        self.levelHeight = 420
+        self.levelWidth = 400
+        self.levelHeight = 720
     }
     override public func getInitialPosition() -> CGPoint {
         return CGPoint(
@@ -164,7 +157,7 @@ class LReversedLevel: GameLevel {
     override public func getFinalPosition() -> CGPoint {
         return CGPoint(
             x: self.levelWidth/2-getLineWidth()/2,
-            y: -self.levelHeight/2+GameLevelConstants.levelsInset)
+            y: -self.levelHeight/2+GameLevelConstants.levelsInset/2)
     }
     override func getJoints()->[CGPoint]{
         return [
@@ -195,7 +188,7 @@ class LetterZLevel: GameLevel{
         return CGPoint(x: -self.levelWidth/2+GameLevelConstants.levelsInset, y: self.levelHeight/2-getLineWidth()/2)
     }
     override public func getFinalPosition() -> CGPoint {
-        return CGPoint(x: self.levelWidth/2-GameLevelConstants.levelsInset, y: -self.levelHeight/2)
+        return CGPoint(x: self.levelWidth/2-GameLevelConstants.levelsInset/2, y: -self.levelHeight/2)
     }
     
     override func getJoints()->[CGPoint]{
@@ -249,16 +242,16 @@ class CounterCircleLevel: GameLevel{
         self.levelHeight = GameLevelConstants.screenWidth
     }
     
-    
     override public func getInitialPosition() -> CGPoint {
-        return CGPoint(
-            x: self.levelWidth/2-getLineWidth()/2,
-            y: GameLevelConstants.levelsInset)
-    }
-    override public func getFinalPosition() -> CGPoint {
         return CGPoint(
             x: -GameLevelConstants.levelsInset,
             y: self.levelWidth/2-getLineWidth()/2)
+    }
+    
+    override public func getFinalPosition() -> CGPoint {
+        return CGPoint(
+            x: self.levelWidth/2-getLineWidth()/2,
+            y: -GameLevelConstants.levelsInset/2)
     }
     
     override func render() {

@@ -14,9 +14,8 @@ struct GameConstants {
     static let loseColor: UIColor = UIColor.init(red: 227.0/255.0, green: 86.0/255.0, blue: 45.0/255.0, alpha:1.0)
     static let backgroundColor: UIColor = UIColor.init(red: 242.0/255.0, green: 241.0/255.0, blue: 246.0/255.0, alpha: 1.0)
     static let touchCategory: UInt32 = 0x1 << 0
-    static let touchRadius: CGFloat = 35
-    static let ballRadius: CGFloat = 50
-    static let maxVelocity: CGFloat = 85
+    static let touchRadius: CGFloat = 50
+    static let ballRadius: CGFloat = 70
 }
 
 class GameScene: SKScene, SKPhysicsContactDelegate{
