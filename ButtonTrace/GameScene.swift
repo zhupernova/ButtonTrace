@@ -44,10 +44,12 @@ class GameScene: SKScene, SKPhysicsContactDelegate{
     private var shouldRefreshTimeInterval: Bool
     private var timerLabel: SKLabelNode
     private var timeSinceCurrentLevel: TimeInterval
+    private var animatingLoss: Bool
     
     override init(){
         isTrackingBall = false
         shouldRefreshTimeInterval  = false
+        animatingLoss = false
         touchIndicator = SKShapeNode.init(circleOfRadius: GameConstants.touchRadius)
         ballNode = SKShapeNode.init(circleOfRadius: GameConstants.ballRadius)
         timerLabel = SKLabelNode(fontNamed: "TrebuchetMS")
@@ -66,6 +68,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate{
     required init?(coder aDecoder: NSCoder) {
         isTrackingBall = false
         shouldRefreshTimeInterval  = false
+        animatingLoss = false
         touchIndicator = SKShapeNode.init(circleOfRadius: GameConstants.touchRadius)
         ballNode = SKShapeNode.init(circleOfRadius: GameConstants.ballRadius)
         timerLabel = SKLabelNode(fontNamed: "TrebuchetMS")
@@ -147,10 +150,19 @@ class GameScene: SKScene, SKPhysicsContactDelegate{
     
     func animateLoss(){
         self.backgroundColor = GameConstants.loseColor
+        animatingLoss = true
         self.run(SKAction.colorize(
             with: GameConstants.backgroundColor,
             colorBlendFactor: 1,
             duration: 0.5))
+        ballNode.run(SKAction.sequence(
+            [
+                SKAction.move(to: currentLevel!.getInitialPosition(), duration: 0.25),
+                SKAction.run {
+                    self.animatingLoss = false
+                }
+            ]
+        ))
     }
     
     func reloadLevel(){
@@ -185,10 +197,6 @@ class GameScene: SKScene, SKPhysicsContactDelegate{
     //touch functions
     func touchDown(atPoint pos : CGPoint) {
         //check for size adjustment actions
-        let touch = reloadButton.contains(pos) ? 1 : 0
-        let less = lessLabel.contains(pos) ? 1 : 0
-        let more = moreLabel.contains(pos) ? 1 : 0
-        NSLog("%d,%d,%d", touch, less, more)
         if reloadButton.contains(pos){
             reloadLevel()
         }
@@ -204,10 +212,8 @@ class GameScene: SKScene, SKPhysicsContactDelegate{
         }
         
         
-        
-        
         //the beginning of touch must start on the red ball
-        if ballNode.frame.contains(pos) {
+        if !animatingLoss && ballNode.frame.contains(pos) {
             //we picked up the ball. we can begin
             isTrackingBall = true
             lastTrackedPoint = pos
@@ -227,8 +233,9 @@ class GameScene: SKScene, SKPhysicsContactDelegate{
         //lastTrackedPoint = pos
         //&& velocity < GameConstants.maxVelocity
         if isTrackingBall {
-            if currentLevel!.contains(pos) {
-                ballNode.position = pos
+            let contactInfo = currentLevel!.getContactInfo(point: pos)
+            if contactInfo.isTouching {
+                ballNode.position = contactInfo.railPoint
                 //check if we've moved the ball into the final position
                 if touchIndicator.frame.contains(currentLevel!.getFinalPosition()) {
                     //you won!
@@ -240,7 +247,6 @@ class GameScene: SKScene, SKPhysicsContactDelegate{
                 //you lost the ball
                 isTrackingBall = false
                 animateLoss()
-                ballNode.position = currentLevel!.getInitialPosition()
             }
         }
 
