@@ -226,13 +226,15 @@ class GameScene: SKScene, SKPhysicsContactDelegate{
     
     func touchMoved(toPoint pos : CGPoint) {
         touchIndicator.position = pos
-
         if isTrackingBall {
             let contactInfo = currentLevel!.getContactInfo(point: pos)
             if contactInfo.isTouching {
                 ballNode.position = contactInfo.railPoint
                 //check if we've moved the ball into the final position
-                if touchIndicator.frame.contains(currentLevel!.getFinalPosition()) {
+                let rect = currentLevel!.getFinalHitbox()
+                if currentLevel!.getFinalHitbox().contains(CGPoint(x:pos.x, y:-pos.y)){
+                //if ballNode.frame.intersects(currentLevel!.getFinalHitbox()) {
+                //if ballNode.frame.contains(currentLevel!.getFinalPosition()) {
                     //you won!
                     isTrackingBall = false
                     animateWin()
@@ -244,7 +246,6 @@ class GameScene: SKScene, SKPhysicsContactDelegate{
                 animateLoss()
             }
         }
-
     }
     
     func touchUp(atPoint pos : CGPoint) {
