@@ -226,12 +226,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate{
     
     func touchMoved(toPoint pos : CGPoint) {
         touchIndicator.position = pos
-       
-        //let xDist = lastTrackedPoint.x - pos.x
-        //let yDist = lastTrackedPoint.y - pos.y
-        //let velocity = CGFloat(sqrt((xDist * xDist) + (yDist * yDist)))
-        //lastTrackedPoint = pos
-        //&& velocity < GameConstants.maxVelocity
+
         if isTrackingBall {
             let contactInfo = currentLevel!.getContactInfo(point: pos)
             if contactInfo.isTouching {

@@ -11,7 +11,7 @@ import SpriteKit
 import GameplayKit
 
 struct GameLevelConstants {
-    static let levelLineWidth: CGFloat = 50
+    static let levelLineWidth: CGFloat = 200
     static let defaultColor: UIColor = UIColor.init(red:225.0/255.0, green:222.0/255.0, blue:217.0/255.0, alpha:1.0)
     static let levelCategory: UInt32 = 0x1 << 1
     static let railInset: CGFloat = 40
@@ -99,6 +99,8 @@ class GameLevel:SKShapeNode{
         }
         if matchingShapes.count == 0 {
             return (false, CGPoint.zero)
+        } else if matchingShapes.count == 1 {
+            return (true, matchingShapes[0].point)
         } else {
             var winningTuple = matchingShapes[0]
             matchingShapes.remove(at: 0)
@@ -153,6 +155,18 @@ class GameLevel:SKShapeNode{
             self.addChild(shape)
             shapes.append(shape)
         }
+        
+        //Debug: also show middle points
+        /*for rail in rails {
+            let path = CGMutablePath.init()
+            path.move(to: rail.a)
+            path.addLine(to: rail.b)
+            let railShape = SKShapeNode.init(path:path)
+            railShape.fillColor = UIColor.red
+            railShape.strokeColor = UIColor.red
+            railShape.lineWidth = 5
+            self.addChild(railShape)
+        }*/
     }
 }
 
@@ -265,13 +279,6 @@ class LetterZLevel: GameLevel{
         self.levelHeight = GameLevelConstants.screenWidth
     }
 
-    override public func getInitialPosition() -> CGPoint {
-        return CGPoint(x: -self.levelWidth/2+GameLevelConstants.railInset, y: self.levelHeight/2-getLineWidth()/2)
-    }
-    override public func getFinalPosition() -> CGPoint {
-        return CGPoint(x: self.levelWidth/2-GameLevelConstants.railInset/2, y: -self.levelHeight/2)
-    }
-
     override func getCorners()->[[CGPoint]]{
         let cornerWidth = sqrt((getLineWidth()*getLineWidth())*2)
         return [
@@ -279,7 +286,7 @@ class LetterZLevel: GameLevel{
                 CGPoint(x: -self.levelWidth/2, y: self.levelHeight/2), //top left
                 CGPoint(x: self.levelWidth/2, y: self.levelHeight/2), //top right
                 CGPoint(
-                    x: self.levelWidth/2,
+                    x: self.levelWidth/2-cornerWidth,
                     y: self.levelHeight/2 - getLineWidth()), //bottom right
                 CGPoint(
                     x: -self.levelWidth/2,
@@ -309,7 +316,7 @@ class LetterZLevel: GameLevel{
                     x: self.levelWidth/2,
                     y: -self.levelHeight/2 + getLineWidth()), //top right
                 CGPoint(
-                    x: -self.levelWidth/2,
+                    x: -self.levelWidth/2 + getLineWidth(),
                     y: -self.levelHeight/2  + getLineWidth()) //top left
             ]
         ]
