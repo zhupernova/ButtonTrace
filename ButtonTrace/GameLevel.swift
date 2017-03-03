@@ -23,6 +23,14 @@ struct CGLineSegment {
     let b: CGPoint
 }
 
+extension ClosedRange {
+    func clamp(_ value : Bound) -> Bound {
+        return self.lowerBound > value ? self.lowerBound
+            : self.upperBound < value ? self.upperBound
+            : value
+    }
+}
+
 
 class GameLevel:SKShapeNode{
     //main class for GameLevel objects
@@ -121,7 +129,11 @@ class GameLevel:SKShapeNode{
         let x1=line.a.x, y1=line.a.y, x2=line.b.x, y2=line.b.y, x3=point.x, y3=point.y
         let px = x2-x1, py = y2-y1, dAB = px*px + py*py
         let u = ((x3 - x1) * px + (y3 - y1) * py) / dAB
-        let x = x1 + u * px, y = y1 + u * py
+        var x = x1 + u * px, y = y1 + u * py
+        let minMaxX = x1 > x2 ? (min: x2, max: x1) : (min: x1, max: x2) //make a min-max X pair
+        let minMaxY = y1 > y2 ? (min: y2, max: y1) : (min: y1, max: y2) //make a min-max Y pair
+        x = (minMaxX.min ... minMaxX.max).clamp(x)
+        y = (minMaxY.min ... minMaxY.max).clamp(y)
         let dx = x3-x, dy = y3-y, d = dx*dx + dy*dy
         return (CGPoint(x:x, y:y), d)
     }
@@ -160,18 +172,6 @@ class GameLevel:SKShapeNode{
             self.addChild(shape)
             shapes.append(shape)
         }
-        
-        //Debug: also show middle points
-        /*for rail in rails {
-            let path = CGMutablePath.init()
-            path.move(to: rail.a)
-            path.addLine(to: rail.b)
-            let railShape = SKShapeNode.init(path:path)
-            railShape.fillColor = UIColor.red
-            railShape.strokeColor = UIColor.red
-            railShape.lineWidth = 5
-            self.addChild(railShape)
-        }*/
     }
 }
 
