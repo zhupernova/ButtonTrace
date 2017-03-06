@@ -13,8 +13,8 @@ struct GameConstants {
     static let winColor: UIColor = UIColor.init(red: 121.0/255.0, green: 195.0/255.0, blue: 81.0/255.0, alpha: 1.0)
     static let loseColor: UIColor = UIColor.init(red: 227.0/255.0, green: 86.0/255.0, blue: 45.0/255.0, alpha:1.0)
     static let backgroundColor: UIColor = UIColor.init(red: 242.0/255.0, green: 241.0/255.0, blue: 246.0/255.0, alpha: 1.0)
-    static let touchCategory: UInt32 = 0x1 << 0
-    static let ballRadius: CGFloat = 70
+
+    static let ballRadius: CGFloat = 80
 }
 extension MutableCollection where Indices.Iterator.Element == Index {
     /// Shuffles the contents of this collection.
@@ -36,6 +36,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate{
     
 
     private var ballNode: SKShapeNode
+    private var playButton: SKSpriteNode
     private var levels: [GameLevel]
     private var levelIndex: Int
     private var currentLevel: GameLevel?
@@ -51,22 +52,25 @@ class GameScene: SKScene, SKPhysicsContactDelegate{
     
     override init(){
         isTrackingBall = false
-        shouldRefreshTimeInterval  = false
+        shouldRefreshTimeInterval = true
         animatingLoss = false
         ballNode = SKShapeNode.init(circleOfRadius: GameConstants.ballRadius)
         timerLabel = SKLabelNode(fontNamed: "TrebuchetMS")
+        playButton = SKSpriteNode(imageNamed: "playbutton")
         timeSinceCurrentLevel = 0
         levelIndex = 0
         levels = []
         super.init()
+
     }
     
     required init?(coder aDecoder: NSCoder) {
         isTrackingBall = false
-        shouldRefreshTimeInterval  = false
+        shouldRefreshTimeInterval = true
         animatingLoss = false
         ballNode = SKShapeNode.init(circleOfRadius: GameConstants.ballRadius)
         timerLabel = SKLabelNode(fontNamed: "TrebuchetMS")
+        playButton = SKSpriteNode(imageNamed: "playbutton")
         timeSinceCurrentLevel = 0
         levelIndex = 0
         levels = []
@@ -83,7 +87,9 @@ class GameScene: SKScene, SKPhysicsContactDelegate{
     }
     
     func createGameLevels() {
-        shouldRefreshTimeInterval = true
+        //start new course
+        playButton.position = CGPoint(x:-1000, y:-1000)
+        shouldRefreshTimeInterval = false
         levels = []
         //vertical, horizontal, circle, z, reverse L
         let formsCount = arc4random_uniform(3) + 1
@@ -114,21 +120,27 @@ class GameScene: SKScene, SKPhysicsContactDelegate{
         }
         levels.shuffle()
         
-    }
-    func renderGame(){
-        createGameLevels()
         
+        reloadLevel()
+    }
+    
+    func renderGame(){
         //the ball we're trying to track
         isTrackingBall = false
         ballNode.fillColor = UIColor.red
         ballNode.zPosition = 1
+        ballNode.position = CGPoint(x: -1000, y: -1000)
         self.addChild(ballNode)
+        
         
         timerLabel.fontColor  = UIColor.black
         timerLabel.verticalAlignmentMode = .bottom
         timerLabel.position = CGPoint(x: 0, y: self.size.height/2 - 50) //50px below top
         self.addChild(timerLabel)
-        reloadLevel()
+        
+        
+        playButton.size = CGSize(width:200, height:200)
+        addChild(playButton)
     }
     
     func animateWin(){
@@ -165,9 +177,13 @@ class GameScene: SKScene, SKPhysicsContactDelegate{
         levelIndex += 1
         if levelIndex >= levels.count {
             levelIndex = 0
-            createGameLevels()
+            shouldRefreshTimeInterval = true
+            //createGameLevels()
+            currentLevel?.removeFromParent()
+            playButton.position = CGPoint(x:0, y:0)
+        }else {
+            beginLevel(level: levels[levelIndex])
         }
-        beginLevel(level: levels[levelIndex])
     }
     
     func beginLevel(level:GameLevel){
@@ -204,10 +220,16 @@ class GameScene: SKScene, SKPhysicsContactDelegate{
     //touch functions
     func touchDown(atPoint pos : CGPoint) {
         //the beginning of touch must start on the red ball
+        if playButton.contains(pos) {
+            createGameLevels()
+            return
+        }
+        
+        
         if currentLevel is BallLevel {
             testPoint(pos:pos)
         }
-        if !animatingLoss && ballNode.frame.contains(pos) {
+        if !animatingLoss && ballNode.contains(pos) {
             //we picked up the ball. we can begin
 
             isTrackingBall = true
@@ -246,10 +268,9 @@ class GameScene: SKScene, SKPhysicsContactDelegate{
         // Called before each frame is rendered
         if shouldRefreshTimeInterval {
             timeSinceCurrentLevel = currentTime
-            shouldRefreshTimeInterval = false
         }
         else {
-            timerLabel.text = String(format: "%.02f seconds on this tour", currentTime - timeSinceCurrentLevel)
+            timerLabel.text = String(format: "%f seconds on this tour", currentTime - timeSinceCurrentLevel)
         }
     }
 }
