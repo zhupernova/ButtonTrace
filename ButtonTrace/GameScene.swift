@@ -14,7 +14,6 @@ struct GameConstants {
     static let loseColor: UIColor = UIColor.init(red: 227.0/255.0, green: 86.0/255.0, blue: 45.0/255.0, alpha:1.0)
     static let backgroundColor: UIColor = UIColor.init(red: 242.0/255.0, green: 241.0/255.0, blue: 246.0/255.0, alpha: 1.0)
     static let touchCategory: UInt32 = 0x1 << 0
-    static let touchRadius: CGFloat = 50
     static let ballRadius: CGFloat = 70
 }
 
@@ -22,8 +21,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate{
     
     var didRenderGame: Bool? //needed in case of app backgrounding, which may cause didMoveToView to execute again
     
-    
-    private var touchIndicator: SKShapeNode
+
     private var ballNode: SKShapeNode
     private let levels: [GameLevel]
     private var levelIndex: Int
@@ -42,12 +40,11 @@ class GameScene: SKScene, SKPhysicsContactDelegate{
         isTrackingBall = false
         shouldRefreshTimeInterval  = false
         animatingLoss = false
-        touchIndicator = SKShapeNode.init(circleOfRadius: GameConstants.touchRadius)
         ballNode = SKShapeNode.init(circleOfRadius: GameConstants.ballRadius)
         timerLabel = SKLabelNode(fontNamed: "TrebuchetMS")
         timeSinceCurrentLevel = 0
         levelIndex = 0
-        levels = [LetterZLevel(),  HLineLevel(), VLineLevel(), LReversedLevel(), CounterCircleLevel()]
+        levels = [CounterCircleLevel()]
         super.init()
     }
     
@@ -55,12 +52,11 @@ class GameScene: SKScene, SKPhysicsContactDelegate{
         isTrackingBall = false
         shouldRefreshTimeInterval  = false
         animatingLoss = false
-        touchIndicator = SKShapeNode.init(circleOfRadius: GameConstants.touchRadius)
         ballNode = SKShapeNode.init(circleOfRadius: GameConstants.ballRadius)
         timerLabel = SKLabelNode(fontNamed: "TrebuchetMS")
         timeSinceCurrentLevel = 0
         levelIndex = 0
-        levels = [LetterZLevel(),  HLineLevel(), VLineLevel(), LReversedLevel(), CounterCircleLevel()]
+        levels = [CounterCircleLevel()]
         super.init(coder: aDecoder)
     }
     
@@ -75,14 +71,6 @@ class GameScene: SKScene, SKPhysicsContactDelegate{
     
     func renderGame(){
         
-        //initialize physics
-        self.physicsWorld.contactDelegate = self
-        //invisible indicator representing touch area
-        touchIndicator.fillColor = UIColor.clear
-        touchIndicator.strokeColor = UIColor.clear
-        touchIndicator.zPosition = 2
-        touchIndicator.position = CGPoint(x: -1000, y: -1000)
-        self.addChild(touchIndicator)
         
         //the ball we're trying to track
         isTrackingBall = false
@@ -160,40 +148,32 @@ class GameScene: SKScene, SKPhysicsContactDelegate{
         if !animatingLoss && ballNode.frame.contains(pos) {
             //we picked up the ball. we can begin
             isTrackingBall = true
-            if touchIndicator.intersects(currentLevel!) {
-                ballNode.position = pos
-            }
         }
-        touchIndicator.position = pos
     }
     
     func touchMoved(toPoint pos : CGPoint) {
-        touchIndicator.position = pos
         if isTrackingBall {
-            let contactInfo = currentLevel!.getContactInfo(point: pos)
-            if contactInfo.isTouching {
-                ballNode.position = contactInfo.railPoint
-                //check if we've moved the ball into the final position
-                let rect = currentLevel!.getFinalHitbox()
-                if rect.contains(CGPoint(x:pos.x, y:-pos.y)){
-                //if ballNode.frame.intersects(currentLevel!.getFinalHitbox()) {
-                //if ballNode.frame.contains(currentLevel!.getFinalPosition()) {
-                    //you won!
-                    isTrackingBall = false
-                    animateWin()
-                    beginNextLevel()
-                }
-            } else {
+            
+            let touchInfo = currentLevel!.getInfoForTouchPosition(position: pos)
+            if touchInfo.shouldWin {
+                //you won!
+                isTrackingBall = false
+                animateWin()
+                beginNextLevel()
+            }
+            else if touchInfo.shouldLose {
                 //you lost the ball
                 isTrackingBall = false
                 animateLoss()
+            }
+            else {
+                ballNode.position = touchInfo.ballPosition
             }
         }
     }
     
     func touchUp(atPoint pos : CGPoint) {
         isTrackingBall = false
-        touchIndicator.position = CGPoint(x:-1000, y:-1000)//move touch offscreen to avoid physicsbody errors
         ballNode.position = currentLevel!.getInitialPosition()
     }
     

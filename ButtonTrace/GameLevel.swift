@@ -33,14 +33,22 @@ extension ClosedRange {
 }
 
 class GameLevel:SKShapeNode{
+    public func getInitialPosition()->CGPoint{
+        return CGPoint.zero
+    }
+    public func getInfoForTouchPosition(position:CGPoint)->
+        (shouldWin: Bool, shouldLose: Bool, ballPosition: CGPoint){
 
+            return (false, false, CGPoint.zero)
+    }
 }
-class Level:GameLevel{
+class ShapeLevel:GameLevel{
     //main class for GameLevel objects
     
     var corners: [[CGPoint]]
     var shapes: [SKShapeNode]
     var rails: [CGLineSegment]
+    var finalHitbox: CGRect
     var displayWidth: CGFloat
     var displayHeight: CGFloat
     var contactWidth: CGFloat
@@ -54,14 +62,14 @@ class Level:GameLevel{
         self.displayHeight = 0
         self.contactWidth = 0
         self.contactHeight = 0
+        self.finalHitbox = CGRect.zero
         super.init()
         self.strokeColor = GameLevelConstants.defaultColor
         self.fillColor = GameLevelConstants.defaultColor
-        
-        
         setSize()
         self.corners = self.getCorners()
         self.rails = self.getRails()
+        finalHitbox = getFinalHitbox()
         render()
     }
     
@@ -73,6 +81,7 @@ class Level:GameLevel{
         self.displayHeight = 0
         self.contactWidth = 0
         self.contactHeight = 0
+        self.finalHitbox = CGRect.zero
         super.init(coder:aDecoder)
     }
 
@@ -82,19 +91,52 @@ class Level:GameLevel{
     
 
 
-    public func getInitialPosition()->CGPoint{
-        if rails.count > 0{
-            return rails.first!.a
-        }
-        return CGPoint.zero
+    override public func getInitialPosition()->CGPoint{
+        return rails[0].a
     }
 
     
-    public func getFinalHitbox()->CGRect{
+    func getFinalHitbox()->CGRect{
         return CGRect.zero
     }
     
-    public func getContactInfo(point: CGPoint)->(isTouching: Bool, railPoint: CGPoint){
+    public override func getInfoForTouchPosition(position: CGPoint) ->
+        (shouldWin: Bool, shouldLose: Bool, ballPosition: CGPoint) {
+
+        var shapeIndex:Int = 0
+        var matchingShapes:[(point: CGPoint, distance: CGFloat)] = []
+        for shape in shapes{
+            if shape.contains(position){
+                //contact is touching a sub-shape. test matching rail
+                let rail = rails[shapeIndex]
+                matchingShapes.append(getProjectionPoint(point: position, line: rail))
+            }
+            shapeIndex += 1
+        }
+        if matchingShapes.count == 0 {
+            //no contact made. you lose
+            return (false, true, CGPoint.zero)
+        } else {
+            
+            var closestTuple = matchingShapes[0]
+            matchingShapes.remove(at: 0)
+            for tuple in matchingShapes{
+                closestTuple = closestTuple.distance > tuple.distance ? tuple : closestTuple
+            }
+            
+            if finalHitbox.contains(
+                CGPoint(x:closestTuple.point.x,
+                        y:-closestTuple.point.y)){
+                //touchpoint is inside target area. you win
+                return (true, false, closestTuple.point)
+            }
+            
+            return (false, false, closestTuple.point)
+        }
+
+    }
+    
+    func getContactInfo(point: CGPoint)->(isTouching: Bool, railPoint: CGPoint){
         var shapeIndex:Int = 0
         var matchingShapes:[(point: CGPoint, distance: CGFloat)] = []
         for shape in shapes{
@@ -175,7 +217,7 @@ class Level:GameLevel{
 
 
 
-class HLineLevel:GameLevel{
+class HLineLevel:ShapeLevel{
     override func setSize(){
         // sets size of the object
         self.contactWidth = GameLevelConstants.screenWidth
@@ -246,7 +288,7 @@ class VLineLevel:HLineLevel{
     }
 }
 
-class LReversedLevel: GameLevel {
+class LReversedLevel: ShapeLevel {
     override func setSize(){
         // sets size of the object
         self.contactWidth = 400
@@ -310,14 +352,15 @@ class LReversedLevel: GameLevel {
     }
 }
 
-class LetterZLevel: GameLevel{
+class LetterZLevel: ShapeLevel{
     override func setSize(){
         // sets size of the object
         self.contactWidth = GameLevelConstants.screenWidth
         self.contactHeight = GameLevelConstants.screenWidth
     }
     
-    override public func getFinalHitbox()->CGRect{
+    override func getFinalHitbox()->CGRect{
+        
         return CGRect(
             x: self.contactWidth/2-GameLevelConstants.railInset,
             y: -(-self.contactHeight/2 + GameLevelConstants.levelContactWidth),
@@ -398,15 +441,15 @@ class LetterZLevel: GameLevel{
     }
 }
 
-class CounterCircleLevel: GameLevel{
+class CounterCircleLevel: ShapeLevel{
     override func setSize(){
         // sets size of the object
         self.contactWidth = GameLevelConstants.screenWidth
         self.contactHeight = GameLevelConstants.screenWidth
     }
-    override public func getFinalHitbox()->CGRect{
+    override func getFinalHitbox()->CGRect{
         return CGRect(
-            x: self.contactWidth/2-GameLevelConstants.levelContactWidth/2,
+            x: self.contactWidth/2-GameLevelConstants.levelContactWidth,
             y: -GameLevelConstants.levelContactWidth,
             width: GameLevelConstants.levelContactWidth,
             height: GameLevelConstants.levelContactWidth + GameLevelConstants.railInset
@@ -424,7 +467,8 @@ class CounterCircleLevel: GameLevel{
         path.addLine(to: CGPoint(x: 0, y: self.contactWidth/2-GameLevelConstants.levelContactWidth))
         path.addArc(center: CGPoint.zero, radius: self.contactWidth/2-GameLevelConstants.levelContactWidth, startAngle: CGFloat.pi/2, endAngle: 0, clockwise: false)
         //draw padding
-        path.addLine(to: CGPoint(x: self.contactWidth/2-GameLevelConstants.levelContactWidth, y: GameLevelConstants.levelContactWidth))
+        path.addLine(to: CGPoint(x: self.contactWidth/2-GameLevelConstants.levelContactWidth,
+                                 y: GameLevelConstants.levelContactWidth))
         path.addLine(to: CGPoint(x: self.contactWidth/2, y: GameLevelConstants.levelContactWidth))
         
         let shape = SKShapeNode.init(path: path)
@@ -438,12 +482,33 @@ class CounterCircleLevel: GameLevel{
             x: -GameLevelConstants.railInset,
             y: self.contactWidth/2-GameLevelConstants.levelContactWidth/2)
     }
-
+    public override func getInfoForTouchPosition(position: CGPoint) ->
+        (shouldWin: Bool, shouldLose: Bool, ballPosition: CGPoint){
+            //check if point is within band radius
+            let r1 = self.contactWidth/2-GameLevelConstants.levelContactWidth, r2 = self.contactWidth/2
+            let r = sqrt(position.x*position.x + position.y*position.y)
+            
+            if r < r1 || r > r2 {
+                return (false, true, CGPoint.zero)
+            }
+            let projection = getCircularProjection(point: position)
+            NSLog("hitbox:%f,%f,%f,%f,%f,%f", finalHitbox.origin.x, finalHitbox.origin.y, finalHitbox.size.width, finalHitbox.size.height, projection.x, -projection.y)
+            return (finalHitbox.contains(CGPoint(x:projection.x, y: -projection.y)), false, projection)
+    }
+    
     func getCircularProjection(point: CGPoint)->CGPoint{
         
         //woohoo trig
         let angle = atan2f(Float(point.y), Float(point.x))
-        return CGPoint(x: CGFloat(cos(angle)) * (self.contactWidth-GameLevelConstants.levelContactWidth)/2, y: CGFloat(sin(angle)) * (self.contactWidth-GameLevelConstants.levelContactWidth)/2)
+        //don't allow going backwards
+        //if angle > Float.pi/4 && angle < Float.pi/2 && point.y>0 {
+            //disable movement betwee
+            //angle = Float.pi/2
+        //}
+        let angleX = CGFloat(cos(angle))
+        let angleY = -CGFloat(sin(-angle))
+        return CGPoint(x: angleX * (self.contactWidth-GameLevelConstants.levelContactWidth)/2,
+                       y: angleY * (self.contactWidth-GameLevelConstants.levelContactWidth)/2)
     }
     
     override public func getContactInfo(point: CGPoint)->(isTouching: Bool, railPoint: CGPoint){
