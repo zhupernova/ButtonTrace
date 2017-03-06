@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		29A5EB651E6D6375002F633C /* LetterZLevel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 29A5EB641E6D6375002F633C /* LetterZLevel.swift */; };
 		29EF8B661E63DACA00113FDA /* Fabric.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 29EF8B641E63DACA00113FDA /* Fabric.framework */; };
 		29EF8B671E63DACA00113FDA /* Crashlytics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 29EF8B651E63DACA00113FDA /* Crashlytics.framework */; };
 		29F5A3CD1E60AEA2003A6EEA /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 29F5A3CC1E60AEA2003A6EEA /* AppDelegate.swift */; };
@@ -21,6 +22,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		29A5EB641E6D6375002F633C /* LetterZLevel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LetterZLevel.swift; sourceTree = "<group>"; };
 		29EF8B641E63DACA00113FDA /* Fabric.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = Fabric.framework; sourceTree = "<group>"; };
 		29EF8B651E63DACA00113FDA /* Crashlytics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = Crashlytics.framework; sourceTree = "<group>"; };
 		29F5A3C91E60AEA2003A6EEA /* ButtonTrace.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ButtonTrace.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -80,6 +82,7 @@
 				29F5A3DB1E60AEA2003A6EEA /* LaunchScreen.storyboard */,
 				29F5A3DE1E60AEA2003A6EEA /* Info.plist */,
 				29F5A3E41E60B46B003A6EEA /* GameLevel.swift */,
+				29A5EB641E6D6375002F633C /* LetterZLevel.swift */,
 			);
 			path = ButtonTrace;
 			sourceTree = "<group>";
@@ -180,6 +183,7 @@
 				29F5A3D31E60AEA2003A6EEA /* GameScene.swift in Sources */,
 				29F5A3D51E60AEA2003A6EEA /* GameViewController.swift in Sources */,
 				29F5A3CD1E60AEA2003A6EEA /* AppDelegate.swift in Sources */,
+				29A5EB651E6D6375002F633C /* LetterZLevel.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

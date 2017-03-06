@@ -16,14 +16,27 @@ struct GameConstants {
     static let touchCategory: UInt32 = 0x1 << 0
     static let ballRadius: CGFloat = 70
 }
-
+extension MutableCollection where Indices.Iterator.Element == Index {
+    /// Shuffles the contents of this collection.
+    mutating func shuffle() {
+        let c = count
+        guard c > 1 else { return }
+        
+        for (firstUnshuffled , unshuffledCount) in zip(indices, stride(from: c, to: 1, by: -1)) {
+            let d: IndexDistance = numericCast(arc4random_uniform(numericCast(unshuffledCount)))
+            guard d != 0 else { continue }
+            let i = index(firstUnshuffled, offsetBy: d)
+            swap(&self[firstUnshuffled], &self[i])
+        }
+    }
+}
 class GameScene: SKScene, SKPhysicsContactDelegate{
     
     var didRenderGame: Bool? //needed in case of app backgrounding, which may cause didMoveToView to execute again
     
 
     private var ballNode: SKShapeNode
-    private let levels: [GameLevel]
+    private var levels: [GameLevel]
     private var levelIndex: Int
     private var currentLevel: GameLevel?
     
@@ -44,7 +57,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate{
         timerLabel = SKLabelNode(fontNamed: "TrebuchetMS")
         timeSinceCurrentLevel = 0
         levelIndex = 0
-        levels = [CounterCircleLevel()]
+        levels = []
         super.init()
     }
     
@@ -56,7 +69,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate{
         timerLabel = SKLabelNode(fontNamed: "TrebuchetMS")
         timeSinceCurrentLevel = 0
         levelIndex = 0
-        levels = [CounterCircleLevel()]
+        levels = []
         super.init(coder: aDecoder)
     }
     
@@ -69,8 +82,41 @@ class GameScene: SKScene, SKPhysicsContactDelegate{
         }
     }
     
-    func renderGame(){
+    func createGameLevels() {
+        shouldRefreshTimeInterval = true
+        levels = []
+        //vertical, horizontal, circle, z, reverse L
+        let formsCount = arc4random_uniform(3) + 1
+        for _ in 1...formsCount{
+            switch arc4random_uniform(5)
+            {
+            case 0:
+                levels.append(VLineLevel())
+                break
+            case 1:
+                levels.append(HLineLevel())
+                break
+            case 2:
+                levels.append(LetterZLevel())
+                break
+            case 3:
+                levels.append(LReversedLevel())
+                break
+            case 4:
+                levels.append(CounterCircleLevel())
+                break
+            default:
+            break
+            }
+        }
+        for _ in 0...10{
+            levels.append(BallLevel())
+        }
+        levels.shuffle()
         
+    }
+    func renderGame(){
+        createGameLevels()
         
         //the ball we're trying to track
         isTrackingBall = false
@@ -82,7 +128,6 @@ class GameScene: SKScene, SKPhysicsContactDelegate{
         timerLabel.verticalAlignmentMode = .bottom
         timerLabel.position = CGPoint(x: 0, y: self.size.height/2 - 50) //50px below top
         self.addChild(timerLabel)
-        
         reloadLevel()
     }
     
@@ -120,6 +165,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate{
         levelIndex += 1
         if levelIndex >= levels.count {
             levelIndex = 0
+            createGameLevels()
         }
         beginLevel(level: levels[levelIndex])
     }
@@ -133,42 +179,45 @@ class GameScene: SKScene, SKPhysicsContactDelegate{
         self.addChild(currentLevel!)
         currentLevel!.zPosition = 0
         ballNode.position = currentLevel!.getInitialPosition()
-        shouldRefreshTimeInterval = true
         
     }
     
+    func testPoint(pos:CGPoint){
     
-
+        let touchInfo = currentLevel!.getInfoForTouchPosition(position: pos)
+        if touchInfo.shouldWin {
+            //you won!
+            isTrackingBall = false
+            animateWin()
+            beginNextLevel()
+        }
+        else if touchInfo.shouldLose {
+            //you lost the ball
+            isTrackingBall = false
+            animateLoss()
+        }
+        else {
+            ballNode.position = touchInfo.ballPosition
+        }
+    }
     
     //touch functions
     func touchDown(atPoint pos : CGPoint) {
-        
-        
         //the beginning of touch must start on the red ball
+        if currentLevel is BallLevel {
+            testPoint(pos:pos)
+        }
         if !animatingLoss && ballNode.frame.contains(pos) {
             //we picked up the ball. we can begin
+
             isTrackingBall = true
         }
     }
     
     func touchMoved(toPoint pos : CGPoint) {
         if isTrackingBall {
-            
-            let touchInfo = currentLevel!.getInfoForTouchPosition(position: pos)
-            if touchInfo.shouldWin {
-                //you won!
-                isTrackingBall = false
-                animateWin()
-                beginNextLevel()
-            }
-            else if touchInfo.shouldLose {
-                //you lost the ball
-                isTrackingBall = false
-                animateLoss()
-            }
-            else {
-                ballNode.position = touchInfo.ballPosition
-            }
+            testPoint(pos:pos)
+
         }
     }
     
@@ -198,6 +247,9 @@ class GameScene: SKScene, SKPhysicsContactDelegate{
         if shouldRefreshTimeInterval {
             timeSinceCurrentLevel = currentTime
             shouldRefreshTimeInterval = false
+        }
+        else {
+            timerLabel.text = String(format: "%.02f seconds on this tour", currentTime - timeSinceCurrentLevel)
         }
     }
 }
