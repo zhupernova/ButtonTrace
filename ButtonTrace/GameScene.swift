@@ -29,16 +29,8 @@ class GameScene: SKScene, SKPhysicsContactDelegate{
     private var levelIndex: Int
     private var currentLevel: GameLevel?
     
-    //level size adjuster
-    private var lessLabel: SKLabelNode
-    private var sizeLabel: SKLabelNode
-    private var moreLabel: SKLabelNode
-    private var sizeOffset: CGFloat
-    private var reloadButton: SKSpriteNode
-    
     //ball tracking parameters
     private var isTrackingBall: Bool
-    private var lastTrackedPoint: CGPoint
     
     //timer display
     private var shouldRefreshTimeInterval: Bool
@@ -53,14 +45,8 @@ class GameScene: SKScene, SKPhysicsContactDelegate{
         touchIndicator = SKShapeNode.init(circleOfRadius: GameConstants.touchRadius)
         ballNode = SKShapeNode.init(circleOfRadius: GameConstants.ballRadius)
         timerLabel = SKLabelNode(fontNamed: "TrebuchetMS")
-        sizeLabel = SKLabelNode(fontNamed: "TrebuchetMS")
         timeSinceCurrentLevel = 0
         levelIndex = 0
-        lastTrackedPoint = CGPoint.zero
-        sizeOffset = 0
-        lessLabel = SKLabelNode(fontNamed: "TrebuchetMS-Bold")
-        moreLabel = SKLabelNode(fontNamed: "TrebuchetMS-Bold")
-        reloadButton = SKSpriteNode(imageNamed: "refresh")
         levels = [LetterZLevel(),  HLineLevel(), VLineLevel(), LReversedLevel(), CounterCircleLevel()]
         super.init()
     }
@@ -72,14 +58,8 @@ class GameScene: SKScene, SKPhysicsContactDelegate{
         touchIndicator = SKShapeNode.init(circleOfRadius: GameConstants.touchRadius)
         ballNode = SKShapeNode.init(circleOfRadius: GameConstants.ballRadius)
         timerLabel = SKLabelNode(fontNamed: "TrebuchetMS")
-        sizeLabel = SKLabelNode(fontNamed: "TrebuchetMS")
         timeSinceCurrentLevel = 0
         levelIndex = 0
-        lastTrackedPoint = CGPoint.zero
-        sizeOffset = 0
-        lessLabel = SKLabelNode(fontNamed: "TrebuchetMS-Bold")
-        moreLabel = SKLabelNode(fontNamed: "TrebuchetMS-Bold")
-        reloadButton = SKSpriteNode(imageNamed: "refresh")
         levels = [LetterZLevel(),  HLineLevel(), VLineLevel(), LReversedLevel(), CounterCircleLevel()]
         super.init(coder: aDecoder)
     }
@@ -115,28 +95,6 @@ class GameScene: SKScene, SKPhysicsContactDelegate{
         timerLabel.position = CGPoint(x: 0, y: self.size.height/2 - 50) //50px below top
         self.addChild(timerLabel)
         
-        sizeLabel.fontColor  = UIColor.black
-        sizeLabel.position = CGPoint(x: 0, y: -self.size.height/2 + 70) //50 px above bottom
-        self.addChild(sizeLabel)
-        
-        lessLabel.text = "-"
-        lessLabel.fontColor = UIColor.blue
-        lessLabel.fontSize = 100
-        lessLabel.horizontalAlignmentMode  = .right
-        lessLabel.position = CGPoint(x: -75, y: -self.size.height/2 + 50)
-        self.addChild(lessLabel)
-        
-        moreLabel.text = "+"
-        moreLabel.fontColor = UIColor.red
-        moreLabel.fontSize = 100
-        moreLabel.horizontalAlignmentMode  = .left
-        moreLabel.position = CGPoint(x: 75, y: -self.size.height/2 + 50)
-        self.addChild(moreLabel)
-        
-        reloadButton.position = CGPoint(x: 175, y: -self.size.height/2 + 75)
-        reloadButton.size = CGSize(width:75, height:75)
-        reloadButton.isUserInteractionEnabled = false
-        self.addChild(reloadButton)
         reloadLevel()
     }
     
@@ -155,6 +113,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate{
             with: GameConstants.backgroundColor,
             colorBlendFactor: 1,
             duration: 0.5))
+
         ballNode.run(SKAction.sequence(
             [
                 SKAction.move(to: currentLevel!.getInitialPosition(), duration: 0.25),
@@ -184,7 +143,6 @@ class GameScene: SKScene, SKPhysicsContactDelegate{
         }
         currentLevel = level
         self.addChild(currentLevel!)
-        currentLevel!.setLineWidthModifier(modifier: sizeOffset)
         currentLevel!.zPosition = 0
         ballNode.position = currentLevel!.getInitialPosition()
         shouldRefreshTimeInterval = true
@@ -196,27 +154,12 @@ class GameScene: SKScene, SKPhysicsContactDelegate{
     
     //touch functions
     func touchDown(atPoint pos : CGPoint) {
-        //check for size adjustment actions
-        if reloadButton.contains(pos){
-            reloadLevel()
-        }
-        
-        else if lessLabel.contains(pos){
-            if sizeOffset > GameLevelConstants.levelLineWidth {
-                sizeOffset -= 1
-            }
-        }
-        
-        else if moreLabel.contains(pos){
-            sizeOffset += 1
-        }
         
         
         //the beginning of touch must start on the red ball
         if !animatingLoss && ballNode.frame.contains(pos) {
             //we picked up the ball. we can begin
             isTrackingBall = true
-            lastTrackedPoint = pos
             if touchIndicator.intersects(currentLevel!) {
                 ballNode.position = pos
             }
@@ -232,7 +175,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate{
                 ballNode.position = contactInfo.railPoint
                 //check if we've moved the ball into the final position
                 let rect = currentLevel!.getFinalHitbox()
-                if currentLevel!.getFinalHitbox().contains(CGPoint(x:pos.x, y:-pos.y)){
+                if rect.contains(CGPoint(x:pos.x, y:-pos.y)){
                 //if ballNode.frame.intersects(currentLevel!.getFinalHitbox()) {
                 //if ballNode.frame.contains(currentLevel!.getFinalPosition()) {
                     //you won!
@@ -272,12 +215,9 @@ class GameScene: SKScene, SKPhysicsContactDelegate{
     
     override func update(_ currentTime: TimeInterval) {
         // Called before each frame is rendered
-        sizeLabel.text = String(format: "%.02f", GameLevelConstants.levelLineWidth + sizeOffset)
         if shouldRefreshTimeInterval {
             timeSinceCurrentLevel = currentTime
             shouldRefreshTimeInterval = false
-        } else {
-            timerLabel.text = String(format: "%.02f seconds on this level", currentTime - timeSinceCurrentLevel)
         }
     }
 }
