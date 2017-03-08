@@ -16,8 +16,8 @@ struct GameLevelConstants {
     static let defaultColor: UIColor = UIColor.init(red:225.0/255.0, green:222.0/255.0, blue:217.0/255.0, alpha:1.0)
     static let levelCategory: UInt32 = 0x1 << 1
     static let railInset: CGFloat = 50
-    static let screenWidth: CGFloat = 528
-    static let screenHeight: CGFloat = 928
+    static let screenWidth: CGFloat = 540
+    static let screenHeight: CGFloat = 960
     static let defaultBallRadius: CGFloat = 80
 }
 

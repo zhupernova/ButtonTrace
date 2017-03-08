@@ -92,7 +92,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate{
         shouldRefreshTimeInterval = false
         levels = []
         //vertical, horizontal, circle, z, reverse L
-        let formsCount = arc4random_uniform(3) + 1
+        let formsCount = arc4random_uniform(5) + 2
         for _ in 1...formsCount{
             switch arc4random_uniform(5)
             {
@@ -115,7 +115,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate{
             break
             }
         }
-        for _ in 0...10{
+        for _ in 0...20{
             levels.append(BallLevel())
         }
         levels.shuffle()
@@ -204,7 +204,6 @@ class GameScene: SKScene, SKPhysicsContactDelegate{
         if touchInfo.shouldWin {
             //you won!
             isTrackingBall = false
-            animateWin()
             beginNextLevel()
         }
         else if touchInfo.shouldLose {
