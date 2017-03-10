@@ -83,6 +83,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate{
     
     override func didMove(to view: SKView) {
         if didRenderGame == nil {
+            self.view?.isMultipleTouchEnabled = false
             let targetWidth =  (self.size.width * 0.84).rounded()
             let targetHeight = (targetWidth/9*16)
             GameLevelConstants.screenWidth = targetWidth
@@ -98,22 +99,36 @@ class GameScene: SKScene, SKPhysicsContactDelegate{
     }
     
     func createGameLevels() {
+        ballNode.position = CGPoint(x: -10000, y: -10000)
+        addChild(ballNode)
         //start new course
         shouldRefreshTimeInterval = false
         levels = []
         //vertical, horizontal, circle, z, reverse L
         
-        levels.append(VLineLevel())
-        levels.append(HLineLevel())
-        levels.append(LetterZLevel())
-        levels.append(LReversedLevel())
-        levels.append(CounterCircleLevel())
-        
-        for _ in 0...30{
+        for _ in 0...4{
             levels.append(BallLevel())
         }
-        levels.shuffle()
-        
+        levels.append(VLineLevel())
+        for _ in 0...4{
+            levels.append(BallLevel())
+        }
+        levels.append(HLineLevel())
+        for _ in 0...4{
+            levels.append(BallLevel())
+        }
+        levels.append(LetterZLevel())
+        for _ in 0...4{
+            levels.append(BallLevel())
+        }
+        levels.append(LReversedLevel())
+        for _ in 0...4{
+            levels.append(BallLevel())
+        }
+        levels.append(CounterCircleLevel())
+        for _ in 0...4{
+            levels.append(BallLevel())
+        }
         
         reloadLevel()
     }
@@ -123,8 +138,6 @@ class GameScene: SKScene, SKPhysicsContactDelegate{
         isTrackingBall = false
         ballNode.fillColor = UIColor.red
         ballNode.zPosition = 1
-        ballNode.position = CGPoint(x: -1000, y: -1000)
-        self.addChild(ballNode)
         
         
         timerLabel.fontColor  = UIColor.black
@@ -198,11 +211,12 @@ class GameScene: SKScene, SKPhysicsContactDelegate{
             shouldRefreshTimeInterval = true
             //createGameLevels()
             
-            self.currentLevel?.removeFromParent()
+            currentLevel?.removeFromParent()
             let count  = SKLabelNode(fontNamed: "TrebuchetMS")
             count.fontSize = 200
             count.fontColor = UIColor.black
             count.text =  "FINISH!"
+            ballNode.removeFromParent()
             addChild(count)
             playSound(name: "finish.wav")
             count.run(
@@ -259,7 +273,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate{
     func touchDown(atPoint pos : CGPoint) {
         //the beginning of touch must start on the red ball
         if playButton.contains(pos) {
-            playButton.position = CGPoint(x:-1000, y:-1000)
+            playButton.position = CGPoint(x:-10000, y:-10000)
             countdown = 3
             _ = Timer.scheduledTimer(timeInterval: 1, target: self, selector: #selector(GameScene.countdownGame), userInfo: nil, repeats: true)
             return
