@@ -7,6 +7,12 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		2956934F1E73123300B12781 /* button.wav in Resources */ = {isa = PBXBuildFile; fileRef = 295693491E73123300B12781 /* button.wav */; };
+		295693501E73123300B12781 /* go.wav in Resources */ = {isa = PBXBuildFile; fileRef = 2956934A1E73123300B12781 /* go.wav */; };
+		295693511E73123300B12781 /* fail.wav in Resources */ = {isa = PBXBuildFile; fileRef = 2956934B1E73123300B12781 /* fail.wav */; };
+		295693521E73123300B12781 /* finish.wav in Resources */ = {isa = PBXBuildFile; fileRef = 2956934C1E73123300B12781 /* finish.wav */; };
+		295693531E73123300B12781 /* form.wav in Resources */ = {isa = PBXBuildFile; fileRef = 2956934D1E73123300B12781 /* form.wav */; };
+		295693541E73123300B12781 /* countdown.wav in Resources */ = {isa = PBXBuildFile; fileRef = 2956934E1E73123300B12781 /* countdown.wav */; };
 		29A5EB651E6D6375002F633C /* LetterZLevel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 29A5EB641E6D6375002F633C /* LetterZLevel.swift */; };
 		29EF8B661E63DACA00113FDA /* Fabric.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 29EF8B641E63DACA00113FDA /* Fabric.framework */; };
 		29EF8B671E63DACA00113FDA /* Crashlytics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 29EF8B651E63DACA00113FDA /* Crashlytics.framework */; };
@@ -22,6 +28,12 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		295693491E73123300B12781 /* button.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = button.wav; sourceTree = "<group>"; };
+		2956934A1E73123300B12781 /* go.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = go.wav; sourceTree = "<group>"; };
+		2956934B1E73123300B12781 /* fail.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = fail.wav; sourceTree = "<group>"; };
+		2956934C1E73123300B12781 /* finish.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = finish.wav; sourceTree = "<group>"; };
+		2956934D1E73123300B12781 /* form.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = form.wav; sourceTree = "<group>"; };
+		2956934E1E73123300B12781 /* countdown.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = countdown.wav; sourceTree = "<group>"; };
 		29A5EB641E6D6375002F633C /* LetterZLevel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LetterZLevel.swift; sourceTree = "<group>"; };
 		29EF8B641E63DACA00113FDA /* Fabric.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = Fabric.framework; sourceTree = "<group>"; };
 		29EF8B651E63DACA00113FDA /* Crashlytics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = Crashlytics.framework; sourceTree = "<group>"; };
@@ -51,6 +63,19 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		295693481E73123300B12781 /* sounds */ = {
+			isa = PBXGroup;
+			children = (
+				295693491E73123300B12781 /* button.wav */,
+				2956934A1E73123300B12781 /* go.wav */,
+				2956934B1E73123300B12781 /* fail.wav */,
+				2956934C1E73123300B12781 /* finish.wav */,
+				2956934D1E73123300B12781 /* form.wav */,
+				2956934E1E73123300B12781 /* countdown.wav */,
+			);
+			path = sounds;
+			sourceTree = "<group>";
+		};
 		29F5A3C01E60AEA2003A6EEA = {
 			isa = PBXGroup;
 			children = (
@@ -72,6 +97,7 @@
 		29F5A3CB1E60AEA2003A6EEA /* ButtonTrace */ = {
 			isa = PBXGroup;
 			children = (
+				295693481E73123300B12781 /* sounds */,
 				29F5A3CC1E60AEA2003A6EEA /* AppDelegate.swift */,
 				29F5A3CE1E60AEA2003A6EEA /* GameScene.sks */,
 				29F5A3D01E60AEA2003A6EEA /* Actions.sks */,
@@ -148,10 +174,16 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				295693531E73123300B12781 /* form.wav in Resources */,
+				295693511E73123300B12781 /* fail.wav in Resources */,
 				29F5A3D81E60AEA2003A6EEA /* Main.storyboard in Resources */,
 				29F5A3CF1E60AEA2003A6EEA /* GameScene.sks in Resources */,
+				295693541E73123300B12781 /* countdown.wav in Resources */,
+				295693521E73123300B12781 /* finish.wav in Resources */,
+				2956934F1E73123300B12781 /* button.wav in Resources */,
 				29F5A3DA1E60AEA2003A6EEA /* Assets.xcassets in Resources */,
 				29F5A3DD1E60AEA2003A6EEA /* LaunchScreen.storyboard in Resources */,
+				295693501E73123300B12781 /* go.wav in Resources */,
 				29F5A3D11E60AEA2003A6EEA /* Actions.sks in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

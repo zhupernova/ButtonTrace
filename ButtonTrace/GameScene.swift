@@ -40,7 +40,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate{
     private var levels: [GameLevel]
     private var levelIndex: Int
     private var currentLevel: GameLevel?
-    
+    private var countdown: Int
     //ball tracking parameters
     private var isTrackingBall: Bool
     
@@ -60,6 +60,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate{
         timeSinceCurrentLevel = 0
         levelIndex = 0
         levels = []
+        countdown = 3
         super.init()
 
     }
@@ -74,6 +75,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate{
         timeSinceCurrentLevel = 0
         levelIndex = 0
         levels = []
+        countdown = 3
         super.init(coder: aDecoder)
     }
     
@@ -81,41 +83,33 @@ class GameScene: SKScene, SKPhysicsContactDelegate{
     
     override func didMove(to view: SKView) {
         if didRenderGame == nil {
+            let targetWidth =  (self.size.width * 0.84).rounded()
+            let targetHeight = (targetWidth/9*16)
+            GameLevelConstants.screenWidth = targetWidth
+            GameLevelConstants.screenHeight = targetHeight
+            NSLog("width:%f, height:%f", targetWidth, targetHeight)
             didRenderGame? = true
             renderGame()
         }
     }
     
+    func playSound(name: String){
+        run(SKAction.playSoundFileNamed(name, waitForCompletion: false))
+    }
+    
     func createGameLevels() {
         //start new course
-        playButton.position = CGPoint(x:-1000, y:-1000)
         shouldRefreshTimeInterval = false
         levels = []
         //vertical, horizontal, circle, z, reverse L
-        let formsCount = arc4random_uniform(5) + 2
-        for _ in 1...formsCount{
-            switch arc4random_uniform(5)
-            {
-            case 0:
-                levels.append(VLineLevel())
-                break
-            case 1:
-                levels.append(HLineLevel())
-                break
-            case 2:
-                levels.append(LetterZLevel())
-                break
-            case 3:
-                levels.append(LReversedLevel())
-                break
-            case 4:
-                levels.append(CounterCircleLevel())
-                break
-            default:
-            break
-            }
-        }
-        for _ in 0...20{
+        
+        levels.append(VLineLevel())
+        levels.append(HLineLevel())
+        levels.append(LetterZLevel())
+        levels.append(LReversedLevel())
+        levels.append(CounterCircleLevel())
+        
+        for _ in 0...30{
             levels.append(BallLevel())
         }
         levels.shuffle()
@@ -142,6 +136,30 @@ class GameScene: SKScene, SKPhysicsContactDelegate{
         playButton.size = CGSize(width:200, height:200)
         addChild(playButton)
     }
+    
+    func countdownGame(timer: Timer){
+        let count  = SKLabelNode(fontNamed: "TrebuchetMS")
+        count.fontSize = 200
+        count.fontColor = UIColor.black
+        count.text = countdown > 0 ? String(format:"%d", countdown) : "GO!"
+        addChild(count)
+        
+        count.run(SKAction .group([
+            SKAction.scale(by: 1.5, duration: 1),
+            SKAction.fadeOut(withDuration: 1)
+            ])){
+            count.removeFromParent()
+        }
+        if countdown == 0 {
+            self.createGameLevels()
+            timer.invalidate()
+            playSound(name: "countdown.wav")
+        } else {
+            playSound(name: "go.wav")
+        }
+        countdown -= 1
+    }
+    
     
     func animateWin(){
         self.backgroundColor = GameConstants.winColor
@@ -179,8 +197,21 @@ class GameScene: SKScene, SKPhysicsContactDelegate{
             levelIndex = 0
             shouldRefreshTimeInterval = true
             //createGameLevels()
-            currentLevel?.removeFromParent()
-            playButton.position = CGPoint(x:0, y:0)
+            
+            self.currentLevel?.removeFromParent()
+            let count  = SKLabelNode(fontNamed: "TrebuchetMS")
+            count.fontSize = 200
+            count.fontColor = UIColor.black
+            count.text =  "FINISH!"
+            addChild(count)
+            playSound(name: "finish.wav")
+            count.run(
+                SKAction.fadeOut(withDuration: 2)
+            ){
+                self.playButton.position = CGPoint(x:0, y:0)
+                count.removeFromParent()
+            }
+            
         }else {
             beginLevel(level: levels[levelIndex])
         }
@@ -203,11 +234,19 @@ class GameScene: SKScene, SKPhysicsContactDelegate{
         let touchInfo = currentLevel!.getInfoForTouchPosition(position: pos)
         if touchInfo.shouldWin {
             //you won!
+            
+            if currentLevel is BallLevel {
+                playSound(name: "button.wav")
+            } else {
+                playSound(name: "form.wav")
+            }
+            
             isTrackingBall = false
             beginNextLevel()
         }
         else if touchInfo.shouldLose {
             //you lost the ball
+            playSound(name: "fail.wav")
             isTrackingBall = false
             animateLoss()
         }
@@ -220,10 +259,15 @@ class GameScene: SKScene, SKPhysicsContactDelegate{
     func touchDown(atPoint pos : CGPoint) {
         //the beginning of touch must start on the red ball
         if playButton.contains(pos) {
-            createGameLevels()
+            playButton.position = CGPoint(x:-1000, y:-1000)
+            countdown = 3
+            _ = Timer.scheduledTimer(timeInterval: 1, target: self, selector: #selector(GameScene.countdownGame), userInfo: nil, repeats: true)
             return
         }
         
+        if shouldRefreshTimeInterval {
+            return
+        }
         
         if currentLevel is BallLevel {
             testPoint(pos:pos)
@@ -244,22 +288,36 @@ class GameScene: SKScene, SKPhysicsContactDelegate{
     
     func touchUp(atPoint pos : CGPoint) {
         isTrackingBall = false
-        ballNode.position = currentLevel!.getInitialPosition()
+        if currentLevel != nil {
+            ballNode.position = currentLevel!.getInitialPosition()
+        }
     }
     
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
+        if touches .count > 1 {
+            return
+        }
         for t in touches { self.touchDown(atPoint: t.location(in: self)) }
     }
     
     override func touchesMoved(_ touches: Set<UITouch>, with event: UIEvent?) {
+        if touches .count > 1 {
+            return
+        }
         for t in touches { self.touchMoved(toPoint: t.location(in: self)) }
     }
     
     override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
+        if touches .count > 1 {
+            return
+        }
         for t in touches { self.touchUp(atPoint: t.location(in: self)) }
     }
     
     override func touchesCancelled(_ touches: Set<UITouch>, with event: UIEvent?) {
+        if touches .count > 1 {
+            return
+        }
         for t in touches { self.touchUp(atPoint: t.location(in: self)) }
     }
     

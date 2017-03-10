@@ -16,9 +16,11 @@ struct GameLevelConstants {
     static let defaultColor: UIColor = UIColor.init(red:225.0/255.0, green:222.0/255.0, blue:217.0/255.0, alpha:1.0)
     static let levelCategory: UInt32 = 0x1 << 1
     static let railInset: CGFloat = 50
-    static let screenWidth: CGFloat = 540
-    static let screenHeight: CGFloat = 960
+    static var screenWidth: CGFloat = 630
+    static var screenHeight: CGFloat = 1120
     static let defaultBallRadius: CGFloat = 80
+
+    
 }
 
 struct CGLineSegment {
@@ -51,8 +53,8 @@ class BallLevel:GameLevel{
         ball.fillColor = UIColor.blue
         ball.strokeColor = UIColor.blue
         super.init()
-        let intWidth = UInt32(floor(GameLevelConstants.screenWidth/2.0))
-        let intHeight = UInt32(floor(GameLevelConstants.screenHeight/2.0))
+        let intWidth = UInt32(floor(GameLevelConstants.screenWidth/2.0-GameLevelConstants.defaultBallRadius))
+        let intHeight = UInt32(floor(GameLevelConstants.screenHeight/2.0-GameLevelConstants.defaultBallRadius))
         let sign1 = CGFloat((arc4random_uniform(2) == 1) ? -1 : 1)
         let sign2 = CGFloat((arc4random_uniform(2) == 1) ? -1 : 1)
         ball.position.x = CGFloat(arc4random_uniform(intWidth)) * sign1
