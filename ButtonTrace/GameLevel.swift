@@ -11,14 +11,14 @@ import SpriteKit
 import GameplayKit
 
 struct GameLevelConstants {
-    static let levelDisplayWidth: CGFloat = 100
-    static let levelContactWidth: CGFloat = 200
+    static var levelDisplayWidth: CGFloat = 100
+    static var levelContactWidth: CGFloat = 200
     static let defaultColor: UIColor = UIColor.init(red:225.0/255.0, green:222.0/255.0, blue:217.0/255.0, alpha:1.0)
     static let levelCategory: UInt32 = 0x1 << 1
     static let railInset: CGFloat = 50
     static var screenWidth: CGFloat = 630
     static var screenHeight: CGFloat = 1120
-    static let defaultBallRadius: CGFloat = 80
+    static var defaultBallRadius: CGFloat = 80
 
     
 }

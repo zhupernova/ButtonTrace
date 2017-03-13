@@ -88,7 +88,11 @@ class GameScene: SKScene, SKPhysicsContactDelegate{
             let targetHeight = (targetWidth/9*16)
             GameLevelConstants.screenWidth = targetWidth
             GameLevelConstants.screenHeight = targetHeight
-            NSLog("width:%f, height:%f", targetWidth, targetHeight)
+            GameLevelConstants.defaultBallRadius = targetHeight/14
+            GameLevelConstants.levelDisplayWidth = GameLevelConstants.defaultBallRadius / 4 * 5
+            GameLevelConstants.levelContactWidth = GameLevelConstants.levelDisplayWidth * 2
+            NSLog("sizes:%f,%f,%f", targetWidth, targetHeight,
+                  GameLevelConstants.defaultBallRadius)
             didRenderGame? = true
             renderGame()
         }
