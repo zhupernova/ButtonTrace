@@ -300,15 +300,16 @@ class GameScene: SKScene, SKPhysicsContactDelegate{
     func touchMoved(toPoint pos : CGPoint) {
         if isTrackingBall {
             testPoint(pos:pos)
-
         }
     }
     
     func touchUp(atPoint pos : CGPoint) {
-        isTrackingBall = false
-        if currentLevel != nil {
-            ballNode.position = currentLevel!.getInitialPosition()
+        if isTrackingBall {
+            if currentLevel != nil {
+                ballNode.position = currentLevel!.getInitialPosition()
+            }
         }
+        isTrackingBall = false
     }
     
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
