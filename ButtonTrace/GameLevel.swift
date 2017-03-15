@@ -15,7 +15,8 @@ struct GameLevelConstants {
     static var levelContactWidth: CGFloat = 200
     static let defaultColor: UIColor = UIColor.init(red:225.0/255.0, green:222.0/255.0, blue:217.0/255.0, alpha:1.0)
     static let levelCategory: UInt32 = 0x1 << 1
-    static let railInset: CGFloat = 50
+    static let startRailInset: CGFloat = 50
+    static let endRailInset: CGFloat = 80
     static var screenWidth: CGFloat = 630
     static var screenHeight: CGFloat = 1120
     static var defaultBallRadius: CGFloat = 80
@@ -311,9 +312,9 @@ class HLineLevel:ShapeLevel{
     }
     override public func getFinalHitbox()->CGRect{
         return CGRect(
-            x: contactWidth/2-GameLevelConstants.railInset,
+            x: contactWidth/2-GameLevelConstants.endRailInset,
             y: -contactHeight/2,
-            width: GameLevelConstants.levelContactWidth + GameLevelConstants.railInset,
+            width: GameLevelConstants.levelContactWidth + GameLevelConstants.endRailInset,
             height: GameLevelConstants.levelContactWidth)
         
     }
@@ -332,8 +333,8 @@ class HLineLevel:ShapeLevel{
     override func getRails() -> [CGLineSegment] {
         return [
             CGLineSegment(
-                a: CGPoint(x: -self.contactWidth/2+GameLevelConstants.railInset, y: 0),
-                b: CGPoint(x: self.contactWidth/2-GameLevelConstants.railInset, y: 0) )
+                a: CGPoint(x: -self.contactWidth/2+GameLevelConstants.startRailInset, y: 0),
+                b: CGPoint(x: self.contactWidth/2-GameLevelConstants.endRailInset, y: 0) )
         ]
     }
 }
@@ -350,9 +351,9 @@ class VLineLevel:HLineLevel{
     override public func getFinalHitbox()->CGRect{
         return CGRect(
             x: -self.contactWidth/2,
-            y: self.contactHeight/2-GameLevelConstants.railInset,
+            y: self.contactHeight/2-GameLevelConstants.endRailInset,
             width: GameLevelConstants.levelContactWidth,
-            height: GameLevelConstants.levelContactWidth + GameLevelConstants.railInset)
+            height: GameLevelConstants.levelContactWidth + GameLevelConstants.endRailInset)
     }
     
     //not needed
@@ -370,8 +371,8 @@ class VLineLevel:HLineLevel{
     override func getRails() -> [CGLineSegment] {
         return [
             CGLineSegment(
-                a: CGPoint(x: 0, y: self.contactHeight/2-GameLevelConstants.railInset),
-                b: CGPoint(x: 0, y: -self.contactHeight/2+GameLevelConstants.railInset) )
+                a: CGPoint(x: 0, y: self.contactHeight/2-GameLevelConstants.startRailInset),
+                b: CGPoint(x: 0, y: -self.contactHeight/2+GameLevelConstants.endRailInset) )
         ]
     }
 }
@@ -390,7 +391,7 @@ class LReversedLevel: ShapeLevel {
     override public func getFinalHitbox()->CGRect{
         return CGRect(
             x: self.contactWidth/2-GameLevelConstants.levelContactWidth,
-            y: -(-self.contactHeight/2 + GameLevelConstants.railInset),
+            y: -(-self.contactHeight/2 + GameLevelConstants.endRailInset),
             width: GameLevelConstants.levelContactWidth,
             height: GameLevelConstants.levelContactWidth)
     }
@@ -427,7 +428,7 @@ class LReversedLevel: ShapeLevel {
             //upper piece
             CGLineSegment(
                 a: CGPoint(
-                    x: -self.contactWidth/2 + GameLevelConstants.railInset,
+                    x: -self.contactWidth/2 + GameLevelConstants.startRailInset,
                     y: (self.contactHeight - GameLevelConstants.levelContactWidth)/2),
                 b: CGPoint(
                     x: self.contactWidth/2 - GameLevelConstants.levelContactWidth/2,
@@ -439,7 +440,7 @@ class LReversedLevel: ShapeLevel {
                     y: (self.contactHeight - GameLevelConstants.levelContactWidth)/2),
                 b: CGPoint(
                     x: self.contactWidth/2 - GameLevelConstants.levelContactWidth/2,
-                    y: -self.contactHeight/2 + GameLevelConstants.railInset))
+                    y: -self.contactHeight/2 + GameLevelConstants.endRailInset))
         ]
     }
 }
@@ -458,7 +459,7 @@ class CounterCircleLevel: ShapeLevel{
             x: self.contactWidth/2-GameLevelConstants.levelContactWidth,
             y: -GameLevelConstants.levelContactWidth,
             width: GameLevelConstants.levelContactWidth,
-            height: GameLevelConstants.levelContactWidth + GameLevelConstants.railInset
+            height: GameLevelConstants.levelContactWidth + GameLevelConstants.endRailInset
         )
     }
     override func render() {
@@ -497,7 +498,7 @@ class CounterCircleLevel: ShapeLevel{
     }
     override public func getInitialPosition() -> CGPoint {
         return CGPoint(
-            x: -GameLevelConstants.railInset,
+            x: -GameLevelConstants.startRailInset,
             y: self.contactWidth/2-GameLevelConstants.levelContactWidth/2)
     }
     public override func getInfoForTouchPosition(position: CGPoint) ->

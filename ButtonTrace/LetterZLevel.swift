@@ -22,9 +22,9 @@ class LetterZLevel: ShapeLevel{
     override func getFinalHitbox()->CGRect{
         
         return CGRect(
-            x: self.contactWidth/2-GameLevelConstants.railInset,
+            x: self.contactWidth/2-GameLevelConstants.endRailInset - GameLevelConstants.levelContactWidth/2,
             y: -(-self.contactHeight/2+GameLevelConstants.levelContactWidth),
-            width: GameLevelConstants.levelContactWidth + GameLevelConstants.railInset,
+            width: GameLevelConstants.levelContactWidth + GameLevelConstants.endRailInset,
             height: GameLevelConstants.levelContactWidth)
     }
     
@@ -76,7 +76,7 @@ class LetterZLevel: ShapeLevel{
         let lineA =
             CGLineSegment(
                 a: CGPoint(
-                    x: -self.contactWidth/2 + GameLevelConstants.railInset,
+                    x: -self.contactWidth/2 + GameLevelConstants.startRailInset,
                     y: (self.contactHeight - GameLevelConstants.levelContactWidth)/2),
                 b: CGPoint(
                     x: self.contactWidth/2 - (GameLevelConstants.levelContactWidth/4*3),
@@ -98,7 +98,7 @@ class LetterZLevel: ShapeLevel{
                     x: -self.contactWidth/2 + (GameLevelConstants.levelContactWidth/4*3),
                     y: (-self.contactHeight+GameLevelConstants.levelContactWidth)/2),
                 b: CGPoint(
-                    x: self.contactWidth/2-GameLevelConstants.railInset,
+                    x: self.contactWidth/2-GameLevelConstants.endRailInset - GameLevelConstants.levelContactWidth/2,
                     y: (-self.contactHeight+GameLevelConstants.levelContactWidth)/2))
         
         

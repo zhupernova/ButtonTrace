@@ -214,7 +214,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate{
             levelIndex = 0
             shouldRefreshTimeInterval = true
             //createGameLevels()
-            
+            isTrackingBall = false
             currentLevel?.removeFromParent()
             let count  = SKLabelNode(fontNamed: "TrebuchetMS")
             count.fontSize = 200
@@ -241,9 +241,9 @@ class GameScene: SKScene, SKPhysicsContactDelegate{
             currentLevel?.removeFromParent()
         }
         currentLevel = level
+        ballNode.position = currentLevel!.getInitialPosition()
         self.addChild(currentLevel!)
         currentLevel!.zPosition = 0
-        ballNode.position = currentLevel!.getInitialPosition()
         
     }
     
