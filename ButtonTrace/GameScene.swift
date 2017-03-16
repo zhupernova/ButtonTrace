@@ -34,7 +34,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate{
     
     var didRenderGame: Bool? //needed in case of app backgrounding, which may cause didMoveToView to execute again
     
-
+    private var world: SKShapeNode
     private var ballNode: SKShapeNode
     private var playButton: SKSpriteNode
     private var levels: [GameLevel]
@@ -57,6 +57,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate{
         ballNode = SKShapeNode.init(circleOfRadius: GameConstants.ballRadius)
         timerLabel = SKLabelNode(fontNamed: "TrebuchetMS")
         playButton = SKSpriteNode(imageNamed: "playbutton")
+        world = SKShapeNode.init()
         timeSinceCurrentLevel = 0
         levelIndex = 0
         levels = []
@@ -72,6 +73,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate{
         ballNode = SKShapeNode.init(circleOfRadius: GameConstants.ballRadius)
         timerLabel = SKLabelNode(fontNamed: "TrebuchetMS")
         playButton = SKSpriteNode(imageNamed: "playbutton")
+        world = SKShapeNode.init()
         timeSinceCurrentLevel = 0
         levelIndex = 0
         levels = []
@@ -100,7 +102,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate{
     }
     
     func playSound(name: String){
-        run(SKAction.playSoundFileNamed(name, waitForCompletion: false))
+        world.run(SKAction.playSoundFileNamed(name, waitForCompletion: false))
     }
     
     func createGameLevels() {
@@ -140,6 +142,8 @@ class GameScene: SKScene, SKPhysicsContactDelegate{
     
     func renderGame(){
         //the ball we're trying to track
+        
+        addChild(world)
         isTrackingBall = false
         ballNode.fillColor = UIColor.red
         ballNode.zPosition = 1
@@ -148,8 +152,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate{
         timerLabel.fontColor  = UIColor.black
         timerLabel.verticalAlignmentMode = .bottom
         timerLabel.position = CGPoint(x: 0, y: self.size.height/2 - 50) //50px below top
-        self.addChild(timerLabel)
-        
+        addChild(timerLabel)
         
         playButton.size = CGSize(width:200, height:200)
         addChild(playButton)
