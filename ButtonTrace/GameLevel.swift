@@ -19,7 +19,6 @@ struct GameLevelConstants {
     static let endRailInset: CGFloat = 80
     static var screenWidth: CGFloat = 630
     static var screenHeight: CGFloat = 1120
-    static var defaultBallRadius: CGFloat = 80
 
     
 }
@@ -50,12 +49,12 @@ class GameLevel:SKShapeNode{
 class BallLevel:GameLevel{
     let ball:SKShapeNode
     override init(){
-        self.ball = SKShapeNode.init(circleOfRadius: GameLevelConstants.defaultBallRadius)
+        self.ball = SKShapeNode.init(circleOfRadius: GameConstants.ballRadius)
         ball.fillColor = UIColor.blue
         ball.strokeColor = UIColor.blue
         super.init()
-        let intWidth = UInt32(floor(GameLevelConstants.screenWidth/2.0-GameLevelConstants.defaultBallRadius))
-        let intHeight = UInt32(floor(GameLevelConstants.screenHeight/2.0-GameLevelConstants.defaultBallRadius))
+        let intWidth = UInt32(floor(GameLevelConstants.screenWidth/2.0-GameConstants.ballRadius))
+        let intHeight = UInt32(floor(GameLevelConstants.screenHeight/2.0-GameConstants.ballRadius))
         let sign1 = CGFloat((arc4random_uniform(2) == 1) ? -1 : 1)
         let sign2 = CGFloat((arc4random_uniform(2) == 1) ? -1 : 1)
         ball.position.x = CGFloat(arc4random_uniform(intWidth)) * sign1

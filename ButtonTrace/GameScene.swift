@@ -14,7 +14,7 @@ struct GameConstants {
     static let loseColor: UIColor = UIColor.init(red: 227.0/255.0, green: 86.0/255.0, blue: 45.0/255.0, alpha:1.0)
     static let backgroundColor: UIColor = UIColor.init(red: 242.0/255.0, green: 241.0/255.0, blue: 246.0/255.0, alpha: 1.0)
 
-    static let ballRadius: CGFloat = 80
+    static var ballRadius: CGFloat = 80
 }
 extension MutableCollection where Indices.Iterator.Element == Index {
     /// Shuffles the contents of this collection.
@@ -84,15 +84,16 @@ class GameScene: SKScene, SKPhysicsContactDelegate{
     override func didMove(to view: SKView) {
         if didRenderGame == nil {
             self.view?.isMultipleTouchEnabled = false
-            let targetWidth =  (self.size.width * 0.84).rounded()
+            
+            let targetWidth =  view.frame.size.width > 320 ?
+                (self.size.width * 0.84).rounded() : 672
             let targetHeight = (targetWidth/9*16)
             GameLevelConstants.screenWidth = targetWidth
             GameLevelConstants.screenHeight = targetHeight
-            GameLevelConstants.defaultBallRadius = targetHeight/14
-            GameLevelConstants.levelDisplayWidth = GameLevelConstants.defaultBallRadius / 4 * 5
+            GameConstants.ballRadius = targetHeight/14
+            ballNode = SKShapeNode.init(circleOfRadius: GameConstants.ballRadius)
+            GameLevelConstants.levelDisplayWidth = GameConstants.ballRadius / 4 * 5
             GameLevelConstants.levelContactWidth = GameLevelConstants.levelDisplayWidth * 2
-            NSLog("sizes:%f,%f,%f", targetWidth, targetHeight,
-                  GameLevelConstants.defaultBallRadius)
             didRenderGame? = true
             renderGame()
         }
@@ -194,14 +195,18 @@ class GameScene: SKScene, SKPhysicsContactDelegate{
             colorBlendFactor: 1,
             duration: 0.5))
 
-        ballNode.run(SKAction.sequence(
-            [
-                SKAction.move(to: currentLevel!.getInitialPosition(), duration: 0.25),
-                SKAction.run {
-                    self.animatingLoss = false
-                }
-            ]
-        ))
+        if currentLevel is ShapeLevel {
+            ballNode.run(SKAction.sequence(
+                [
+                    SKAction.move(to: currentLevel!.getInitialPosition(), duration: 0.25),
+                    SKAction.run {
+                        self.animatingLoss = false
+                    }
+                ]
+            ))
+        } else {
+            animatingLoss = false
+        }
     }
     
     func reloadLevel(){
