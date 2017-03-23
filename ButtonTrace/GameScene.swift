@@ -102,7 +102,17 @@ class GameScene: SKScene, SKPhysicsContactDelegate{
     }
     
     func playSound(name: String){
-        world.run(SKAction.playSoundFileNamed(name, waitForCompletion: false))
+        
+        let floatDuration = name == "countdown.wav" ? 5 : 1
+        let audioNode = SKAudioNode(fileNamed: name)
+        audioNode.autoplayLooped = false
+        self.addChild(audioNode)
+        let playAction = SKAction.play()
+        let waitAction = SKAction.wait(forDuration: TimeInterval(floatDuration))
+        let removeAction = SKAction.removeFromParent()
+        audioNode.run(SKAction.sequence(
+            [SKAction.group([playAction, waitAction]),
+             removeAction]))
     }
     
     func createGameLevels() {
