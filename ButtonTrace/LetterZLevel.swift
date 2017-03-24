@@ -32,14 +32,14 @@ class LetterZLevel: ShapeLevel{
         let cornerWidth = sqrt((bandWidth*bandWidth)*2)
         return [
             [//top piece
-                CGPoint(x: -width/2, y: height/2), //top left
+                CGPoint(
+                    x: -width/2 + GameLevelConstants.startRailInset,
+                    y: height/2  - bandWidth), //bottom left
+                CGPoint(x: -width/2 + GameLevelConstants.startRailInset, y: height/2), //top left
                 CGPoint(x: width/2, y: height/2), //top right
                 CGPoint(
                     x: width/2 - cornerWidth,
                     y: height/2 - bandWidth), //bottom right
-                CGPoint(
-                    x: -width/2,
-                    y: height/2  - bandWidth) //bottom left
             ],
             [//slanted piece
                 CGPoint( //top left
@@ -56,17 +56,17 @@ class LetterZLevel: ShapeLevel{
                 
                 CGPoint(//top right
                     x: width/2,
-                    y: height/2)
+                    y: height/2),
             ],
             [//bottom piece
                 CGPoint(x: -width/2, y: -height/2), //bottom left
-                CGPoint(x: width/2, y: -height/2), //bottom right
-                CGPoint(
-                    x: width/2,
-                    y: -height/2 + bandWidth), //top right
                 CGPoint(
                     x: -width/2 + cornerWidth,
-                    y: -height/2  + bandWidth) //top left
+                    y: -height/2  + bandWidth), //top left
+                CGPoint(
+                    x: width/2 - GameLevelConstants.startRailInset,
+                    y: -height/2 + bandWidth), //top right
+                CGPoint(x: width/2 - GameLevelConstants.startRailInset, y: -height/2), //bottom right
             ]
         ]
     }
@@ -76,7 +76,7 @@ class LetterZLevel: ShapeLevel{
         let lineA =
             CGLineSegment(
                 a: CGPoint(
-                    x: -self.contactWidth/2 + GameLevelConstants.startRailInset,
+                    x: -self.contactWidth/2 + GameLevelConstants.startRailInset + GameLevelConstants.roundedRadius,
                     y: (self.contactHeight - GameLevelConstants.levelContactWidth)/2),
                 b: CGPoint(
                     x: self.contactWidth/2 - (GameLevelConstants.levelContactWidth/4*3),

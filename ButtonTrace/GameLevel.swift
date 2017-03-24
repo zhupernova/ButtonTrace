@@ -13,7 +13,8 @@ import GameplayKit
 struct GameLevelConstants {
     static var levelDisplayWidth: CGFloat = 100
     static var levelContactWidth: CGFloat = 200
-    static let defaultColor: UIColor = UIColor.init(red:225.0/255.0, green:222.0/255.0, blue:217.0/255.0, alpha:1.0)
+    static var roundedRadius: CGFloat = 25
+    static let defaultColor: UIColor = UIColor.init(red:225.0/255.0, green:222.0/255.0, blue:217.0/255.0, alpha:0.85)
     static let levelCategory: UInt32 = 0x1 << 1
     static let startRailInset: CGFloat = 50
     static let endRailInset: CGFloat = 80
@@ -50,11 +51,16 @@ class BallLevel:GameLevel{
     let ball:SKShapeNode
     override init(){
         self.ball = SKShapeNode.init(circleOfRadius: GameConstants.ballRadius)
-        ball.fillColor = UIColor.blue
-        ball.strokeColor = UIColor.blue
+        ball.fillColor = UIColor.clear
+        ball.strokeColor = UIColor.clear
         super.init()
         let intWidth = UInt32(floor(GameLevelConstants.screenWidth/2.0-GameConstants.ballRadius))
         let intHeight = UInt32(floor(GameLevelConstants.screenHeight/2.0-GameConstants.ballRadius))
+        
+        let monkey = SKSpriteNode.init(imageNamed: "monkey-button")
+        monkey.size = CGSize(width: GameConstants.ballRadius*2, height:GameConstants.ballRadius*2)
+        ball.addChild(monkey)
+        
         let sign1 = CGFloat((arc4random_uniform(2) == 1) ? -1 : 1)
         let sign2 = CGFloat((arc4random_uniform(2) == 1) ? -1 : 1)
         ball.position.x = CGFloat(arc4random_uniform(intWidth)) * sign1
@@ -226,24 +232,61 @@ class ShapeLevel:GameLevel{
         return []
     }
     
+    func getCircleInfo(point1: CGPoint, point2: CGPoint)->(angle1: CGFloat, angle2: CGFloat, center: CGPoint, radius: CGFloat){
+        let distance = sqrt(
+            powf(Float(point1.x) - Float(point2.x), 2) +
+                powf(Float(point1.y) - Float(point2.y), 2))
+        
+        
+        
+        NSLog("distance:%f, 1(%f,%f), 2(%f,%f)", distance, point1.x, point1.y, point2.x, point2.y)
+        let centerPoint = CGPoint(x: (point2.x + point1.x)/2, y : (point2.y + point1.y)/2)
+        
+        let angle1 =  atan2f(Float(point1.y - centerPoint.y), Float(point1.x - centerPoint.x))
+        let angle2 =  atan2f(Float(point2.y - centerPoint.y), Float(point2.x - centerPoint.x))
+        NSLog("angles:%f,%f, (%f,%f)", angle1, angle2, centerPoint.x, centerPoint.y)
+        return (CGFloat(angle1), CGFloat(angle2), centerPoint, CGFloat(distance/2.0))
+    }
+    
     func addShapeCollectionFromCorners(corners:[[CGPoint]], addToShapes:Bool, offset:CGPoint){
         let path = CGMutablePath.init()
         for points in corners{
             //points is an array indicating the shape we want
             let initialJoint = points[0]
-            path.move(to: CGPoint(x:initialJoint.x + offset.x, y:initialJoint.y + offset.y))
+            var fromJoint = CGPoint(x: initialJoint.x + offset.x, y: initialJoint.y + offset.y)
+            path.move(to: fromJoint)
             for i in 1...points.count-1 {
                 let joint = points[i]
-                path.addLine(to: CGPoint(x:joint.x + offset.x, y:joint.y + offset.y))
+                let toJoint = CGPoint(x: joint.x + offset.x, y: joint.y + offset.y)
+                var didDrawLine = false
+                if  !addToShapes {
+                    
+                    //if not adding this to contact shapes, it's a display shape.
+                    if (points == corners.first! && i == 1) ||
+                         (points == corners.last! && i == points.count - 1 ){
+                            
+                        //this is the first line of the first shape or the last line of the last shape. need to round some corners
+                        let circleInfo = getCircleInfo(point1: fromJoint, point2: toJoint)
+                        path.addArc(center: circleInfo.center, radius: circleInfo.radius, startAngle: circleInfo.angle1, endAngle: circleInfo.angle2, clockwise: true)
+                        didDrawLine = true
+                    }
+                }
+                if !didDrawLine {
+                    path.addLine(to: toJoint)
+                }
+                fromJoint = toJoint
             }
-            
+            path.closeSubpath()
             //create shape from the path and add to self
             let shape = SKShapeNode.init(path: path)
-            shape.fillColor = self.fillColor
-            shape.strokeColor = self.strokeColor
             self.addChild(shape)
             if addToShapes {
+                shape.strokeColor = UIColor.clear
                 shapes.append(shape)
+            } else {
+                shape.fillColor = self.fillColor
+                shape.strokeColor = UIColor.clear //UIColor.black
+                shape.lineWidth = 0
             }
         }
     }
@@ -275,8 +318,9 @@ class ShapeLevel:GameLevel{
         self.addChild(shape)
         
         
-        self.strokeColor = GameLevelConstants.defaultColor
+        self.strokeColor = UIColor.black
         self.fillColor = GameLevelConstants.defaultColor
+        self.lineWidth = 0
         addShapeCollectionFromCorners(corners:displayCorners,
                                       addToShapes:false,
                                       offset:displayCornersOffset)
@@ -322,10 +366,10 @@ class HLineLevel:ShapeLevel{
         //reminder: game coordinates are bottom-up
         return [
             [
-                CGPoint(x: -width/2, y: height/2),
-                CGPoint(x: width/2, y: height/2),
-                CGPoint(x: width/2, y: -height/2),
-                CGPoint(x: -width/2, y: -height/2),
+                CGPoint(x: -width/2  + GameLevelConstants.roundedRadius, y: -height/2),
+                CGPoint(x: -width/2  + GameLevelConstants.roundedRadius, y: height/2),
+                CGPoint(x: width/2 - GameLevelConstants.roundedRadius, y: height/2),
+                CGPoint(x: width/2 - GameLevelConstants.roundedRadius, y: -height/2),
                 ]
         ]
     }
@@ -378,6 +422,8 @@ class VLineLevel:HLineLevel{
 
 class LReversedLevel: ShapeLevel {
     override func setSize(){
+        
+        
         // sets size of the object
         let offset = (GameLevelConstants.levelContactWidth - GameLevelConstants.levelDisplayWidth)/2
         contactWidth = 400
@@ -399,10 +445,10 @@ class LReversedLevel: ShapeLevel {
         return [
             //upper piece
             [
+                CGPoint(x: -width/2, y: height/2 - bandWidth),
                 CGPoint(x: -width/2, y: height/2),
                 CGPoint(x: width/2, y: height/2),
                 CGPoint(x: width/2, y: height/2 - bandWidth),
-                CGPoint(x: -width/2, y: height/2 - bandWidth)
             ],
             //long piece
             [
@@ -410,14 +456,14 @@ class LReversedLevel: ShapeLevel {
                     x: width/2 - bandWidth,
                     y: height/2),
                 CGPoint(
+                    x: width/2,
+                    y: height/2),
+                CGPoint(
+                    x: width/2,
+                    y: -height/2),
+                CGPoint(
                     x: width/2 - bandWidth,
                     y: -height/2),
-                CGPoint(
-                    x: width/2,
-                    y: -height/2),
-                CGPoint(
-                    x: width/2,
-                    y: height/2)
             ]
         ]
     }
@@ -486,13 +532,21 @@ class CounterCircleLevel: ShapeLevel{
         let innerWidth = GameLevelConstants.levelDisplayWidth
         let innerpath = CGMutablePath.init()
         innerpath.addArc(center: CGPoint.zero, radius: innerR, startAngle: 0, endAngle: CGFloat.pi/2, clockwise: true)
-        innerpath.addLine(to: CGPoint(x: 0, y: r-innerWidth))
+        
+        
+        let circleInfo1 = getCircleInfo(point1: CGPoint(x: 0, y: innerR), point2: CGPoint(x: 0, y: innerR - innerWidth))
+        innerpath.addArc(center: circleInfo1.center, radius: circleInfo1.radius, startAngle: circleInfo1.angle1, endAngle: circleInfo1.angle2, clockwise: true)
+        
         innerpath.addArc(center: CGPoint.zero, radius: innerR-innerWidth, startAngle: CGFloat.pi/2, endAngle: 0, clockwise: false)
+        
+        let circleInfo2 = getCircleInfo(point1: CGPoint(x: innerR - innerWidth, y: 0), point2: CGPoint(x: innerR, y: 0))
+        innerpath.addArc(center: circleInfo2.center, radius: circleInfo2.radius, startAngle: circleInfo2.angle1, endAngle: circleInfo2.angle2, clockwise: true)
         
         let innershape = SKShapeNode.init(path: innerpath)
         
-        innershape.strokeColor = GameLevelConstants.defaultColor
+        innershape.strokeColor = UIColor.black
         innershape.fillColor = GameLevelConstants.defaultColor
+        innershape.lineWidth = 0
         self.addChild(innershape)
     }
     override public func getInitialPosition() -> CGPoint {

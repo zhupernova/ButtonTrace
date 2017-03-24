@@ -14,6 +14,7 @@
 		295693531E73123300B12781 /* form.wav in Resources */ = {isa = PBXBuildFile; fileRef = 2956934D1E73123300B12781 /* form.wav */; };
 		295693541E73123300B12781 /* countdown.wav in Resources */ = {isa = PBXBuildFile; fileRef = 2956934E1E73123300B12781 /* countdown.wav */; };
 		29A5EB651E6D6375002F633C /* LetterZLevel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 29A5EB641E6D6375002F633C /* LetterZLevel.swift */; };
+		29B39EF41E8572B1006C3676 /* dust.atlas in Resources */ = {isa = PBXBuildFile; fileRef = 29B39EF31E8572B1006C3676 /* dust.atlas */; };
 		29EF8B661E63DACA00113FDA /* Fabric.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 29EF8B641E63DACA00113FDA /* Fabric.framework */; };
 		29EF8B671E63DACA00113FDA /* Crashlytics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 29EF8B651E63DACA00113FDA /* Crashlytics.framework */; };
 		29F5A3CD1E60AEA2003A6EEA /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 29F5A3CC1E60AEA2003A6EEA /* AppDelegate.swift */; };
@@ -25,6 +26,7 @@
 		29F5A3DA1E60AEA2003A6EEA /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 29F5A3D91E60AEA2003A6EEA /* Assets.xcassets */; };
 		29F5A3DD1E60AEA2003A6EEA /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 29F5A3DB1E60AEA2003A6EEA /* LaunchScreen.storyboard */; };
 		29F5A3E51E60B46B003A6EEA /* GameLevel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 29F5A3E41E60B46B003A6EEA /* GameLevel.swift */; };
+		29F907E11E8596EA00C2AF99 /* true-crimes.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 29F907DF1E85801E00C2AF99 /* true-crimes.ttf */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -35,6 +37,7 @@
 		2956934D1E73123300B12781 /* form.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = form.wav; sourceTree = "<group>"; };
 		2956934E1E73123300B12781 /* countdown.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = countdown.wav; sourceTree = "<group>"; };
 		29A5EB641E6D6375002F633C /* LetterZLevel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LetterZLevel.swift; sourceTree = "<group>"; };
+		29B39EF31E8572B1006C3676 /* dust.atlas */ = {isa = PBXFileReference; lastKnownFileType = folder.skatlas; path = dust.atlas; sourceTree = "<group>"; };
 		29EF8B641E63DACA00113FDA /* Fabric.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = Fabric.framework; sourceTree = "<group>"; };
 		29EF8B651E63DACA00113FDA /* Crashlytics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = Crashlytics.framework; sourceTree = "<group>"; };
 		29F5A3C91E60AEA2003A6EEA /* ButtonTrace.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ButtonTrace.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -48,6 +51,7 @@
 		29F5A3DC1E60AEA2003A6EEA /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		29F5A3DE1E60AEA2003A6EEA /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		29F5A3E41E60B46B003A6EEA /* GameLevel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GameLevel.swift; sourceTree = "<group>"; };
+		29F907DF1E85801E00C2AF99 /* true-crimes.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "true-crimes.ttf"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -97,6 +101,7 @@
 		29F5A3CB1E60AEA2003A6EEA /* ButtonTrace */ = {
 			isa = PBXGroup;
 			children = (
+				29F907DF1E85801E00C2AF99 /* true-crimes.ttf */,
 				295693481E73123300B12781 /* sounds */,
 				29F5A3CC1E60AEA2003A6EEA /* AppDelegate.swift */,
 				29F5A3CE1E60AEA2003A6EEA /* GameScene.sks */,
@@ -104,6 +109,7 @@
 				29F5A3D21E60AEA2003A6EEA /* GameScene.swift */,
 				29F5A3D41E60AEA2003A6EEA /* GameViewController.swift */,
 				29F5A3D61E60AEA2003A6EEA /* Main.storyboard */,
+				29B39EF31E8572B1006C3676 /* dust.atlas */,
 				29F5A3D91E60AEA2003A6EEA /* Assets.xcassets */,
 				29F5A3DB1E60AEA2003A6EEA /* LaunchScreen.storyboard */,
 				29F5A3DE1E60AEA2003A6EEA /* Info.plist */,
@@ -174,6 +180,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				29F907E11E8596EA00C2AF99 /* true-crimes.ttf in Resources */,
 				295693531E73123300B12781 /* form.wav in Resources */,
 				295693511E73123300B12781 /* fail.wav in Resources */,
 				29F5A3D81E60AEA2003A6EEA /* Main.storyboard in Resources */,
@@ -183,6 +190,7 @@
 				2956934F1E73123300B12781 /* button.wav in Resources */,
 				29F5A3DA1E60AEA2003A6EEA /* Assets.xcassets in Resources */,
 				29F5A3DD1E60AEA2003A6EEA /* LaunchScreen.storyboard in Resources */,
+				29B39EF41E8572B1006C3676 /* dust.atlas in Resources */,
 				295693501E73123300B12781 /* go.wav in Resources */,
 				29F5A3D11E60AEA2003A6EEA /* Actions.sks in Resources */,
 			);

@@ -41,6 +41,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate{
     private var levelIndex: Int
     private var currentLevel: GameLevel?
     private var countdown: Int
+    private var dustFrames: [SKTexture]
     //ball tracking parameters
     private var isTrackingBall: Bool
     
@@ -62,6 +63,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate{
         levelIndex = 0
         levels = []
         countdown = 3
+        dustFrames = []
         super.init()
 
     }
@@ -78,14 +80,18 @@ class GameScene: SKScene, SKPhysicsContactDelegate{
         levelIndex = 0
         levels = []
         countdown = 3
+        dustFrames = []
         super.init(coder: aDecoder)
     }
-    
-    
     
     override func didMove(to view: SKView) {
         if didRenderGame == nil {
             self.view?.isMultipleTouchEnabled = false
+            let bg = SKSpriteNode.init(imageNamed: "background-jungle-light")
+            bg.size = CGSize(width: self.size.width, height: self.size.height)
+            bg.zPosition = -1
+            self.addChild(bg)
+            
             
             let targetWidth =  view.frame.size.width > 320 ?
                 (self.size.width * 0.84).rounded() : 672
@@ -93,7 +99,11 @@ class GameScene: SKScene, SKPhysicsContactDelegate{
             GameLevelConstants.screenWidth = targetWidth
             GameLevelConstants.screenHeight = targetHeight
             GameConstants.ballRadius = targetHeight/14
-            ballNode = SKShapeNode.init(circleOfRadius: GameConstants.ballRadius)
+            ballNode.fillColor = UIColor.clear
+            ballNode.strokeColor = UIColor.clear
+            let banana = SKSpriteNode.init(imageNamed: "banana")
+            banana.size = CGSize(width: GameConstants.ballRadius*2, height: GameConstants.ballRadius*2)
+            ballNode.addChild(banana)
             GameLevelConstants.levelDisplayWidth = GameConstants.ballRadius / 4 * 5
             GameLevelConstants.levelContactWidth = GameLevelConstants.levelDisplayWidth * 2
             didRenderGame? = true
@@ -155,13 +165,27 @@ class GameScene: SKScene, SKPhysicsContactDelegate{
         
         addChild(world)
         isTrackingBall = false
-        ballNode.fillColor = UIColor.red
         ballNode.zPosition = 1
         
+        let atlas = SKTextureAtlas(named: "dust")
         
-        timerLabel.fontColor  = UIColor.black
+        for i in 1...6{
+            dustFrames.append(
+                atlas.textureNamed(String(format: "dust%d", i))
+            )
+        }
+        let bg = SKShapeNode(rect: CGRect(x: -self.size.width/6, y: self.size.height/2 - 80, width: self.size.width/3, height: 80), cornerRadius: 10)
+        bg.fillColor = UIColor.init(white: 0.0, alpha: 0.8)
+        let clock = SKSpriteNode(texture: SKTexture(imageNamed: "Time"))
+        bg.addChild(clock)
+        clock.position =  CGPoint(x: -self.size.width/6 + 40, y: self.size.height/2 - 60 + clock.size.height/2)
+        addChild(bg)
+        
+        timerLabel.fontColor  = UIColor.white
+        timerLabel.horizontalAlignmentMode = .left
         timerLabel.verticalAlignmentMode = .bottom
-        timerLabel.position = CGPoint(x: 0, y: self.size.height/2 - 50) //50px below top
+        timerLabel.position = CGPoint(x: -50, y: self.size.height/2 - 50) //50px below top
+        
         addChild(timerLabel)
         
         playButton.size = CGSize(width:200, height:200)
@@ -169,18 +193,28 @@ class GameScene: SKScene, SKPhysicsContactDelegate{
     }
     
     func countdownGame(timer: Timer){
-        let count  = SKLabelNode(fontNamed: "TrebuchetMS")
-        count.fontSize = 200
-        count.fontColor = UIColor.black
-        count.text = countdown > 0 ? String(format:"%d", countdown) : "GO!"
-        addChild(count)
         
-        count.run(SKAction .group([
+        
+        let count  = SKLabelNode(fontNamed: "True Crimes")
+        count.fontSize = 200
+        count.fontColor = UIColor(red: 0.965, green: 0.388, blue: 0.188, alpha: 1)
+        count.text = countdown > 0 ? String(format:"%d", countdown) : "GO!"
+
+        count.position = CGPoint(x: -10.0, y: -10.0)
+        count.zPosition = 100
+        let shadow = count.copy() as! SKLabelNode
+        shadow.fontColor = UIColor.black
+        shadow.addChild(count)
+
+        shadow.run(SKAction .group([
             SKAction.scale(by: 1.5, duration: 1),
             SKAction.fadeOut(withDuration: 1)
             ])){
-            count.removeFromParent()
+            shadow.removeFromParent()
         }
+
+        addChild(shadow)
+        
         if countdown == 0 {
             self.createGameLevels()
             timer.invalidate()
@@ -192,12 +226,19 @@ class GameScene: SKScene, SKPhysicsContactDelegate{
     }
     
     
-    func animateWin(){
-        self.backgroundColor = GameConstants.winColor
-        self.run(SKAction.colorize(
-            with: GameConstants.backgroundColor,
-            colorBlendFactor: 1,
-            duration: 0.5))
+    func animateWin(point: CGPoint){
+        let dust = SKSpriteNode(texture: dustFrames[0])
+        dust.position = point
+        dust.size = CGSize(width: 80, height: 80)
+        addChild(dust)
+        dust.run(
+            SKAction.sequence(
+                [
+                    SKAction.animate(with: dustFrames, timePerFrame: 0.1),
+                    SKAction.removeFromParent()
+                ]
+            )
+        )
     }
     
     func animateLoss(){
@@ -234,18 +275,25 @@ class GameScene: SKScene, SKPhysicsContactDelegate{
             //createGameLevels()
             isTrackingBall = false
             currentLevel?.removeFromParent()
-            let count  = SKLabelNode(fontNamed: "TrebuchetMS")
+            let count  = SKLabelNode(fontNamed:  "True Crimes")
             count.fontSize = 200
-            count.fontColor = UIColor.black
+            count.fontColor = UIColor(red: 0.965, green: 0.388, blue: 0.188, alpha: 1)
             count.text =  "FINISH!"
+            
+            count.position = CGPoint(x: -10.0, y: -10.0)
+            count.zPosition = 100
+            let shadow = count.copy() as! SKLabelNode
+            shadow.fontColor = UIColor.black
+            shadow.addChild(count)
+            
             ballNode.removeFromParent()
-            addChild(count)
+            addChild(shadow)
             playSound(name: "finish.wav")
-            count.run(
+            shadow.run(
                 SKAction.fadeOut(withDuration: 2)
             ){
                 self.playButton.position = CGPoint(x:0, y:0)
-                count.removeFromParent()
+                shadow.removeFromParent()
             }
             
         }else {
@@ -276,6 +324,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate{
             } else {
                 playSound(name: "form.wav")
             }
+            animateWin(point: pos)
             
             isTrackingBall = false
             beginNextLevel()
@@ -364,7 +413,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate{
             timeSinceCurrentLevel = currentTime
         }
         else {
-            timerLabel.text = String(format: "%f seconds on this tour", currentTime - timeSinceCurrentLevel)
+            timerLabel.text = String(format: "%f", currentTime - timeSinceCurrentLevel)
         }
     }
 }
