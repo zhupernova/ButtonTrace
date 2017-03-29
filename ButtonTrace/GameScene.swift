@@ -13,8 +13,10 @@ struct GameConstants {
     static let winColor: UIColor = UIColor.init(red: 121.0/255.0, green: 195.0/255.0, blue: 81.0/255.0, alpha: 1.0)
     static let loseColor: UIColor = UIColor.init(red: 227.0/255.0, green: 86.0/255.0, blue: 45.0/255.0, alpha:1.0)
     static let backgroundColor: UIColor = UIColor.init(red: 242.0/255.0, green: 241.0/255.0, blue: 246.0/255.0, alpha: 1.0)
-
+    
     static var ballRadius: CGFloat = 80
+    
+    static var ballAppearanceRadius: CGFloat = 120
 }
 extension MutableCollection where Indices.Iterator.Element == Index {
     /// Shuffles the contents of this collection.
@@ -34,7 +36,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate{
     
     var didRenderGame: Bool? //needed in case of app backgrounding, which may cause didMoveToView to execute again
     
-    private var world: SKShapeNode
+    private var world: SKSpriteNode
     private var ballNode: SKShapeNode
     private var playButton: SKSpriteNode
     private var levels: [GameLevel]
@@ -58,7 +60,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate{
         ballNode = SKShapeNode.init(circleOfRadius: GameConstants.ballRadius)
         timerLabel = SKLabelNode(fontNamed: "TrebuchetMS")
         playButton = SKSpriteNode(imageNamed: "playbutton")
-        world = SKShapeNode.init()
+        world = SKSpriteNode.init(imageNamed: "background-jungle-light")
         timeSinceCurrentLevel = 0
         levelIndex = 0
         levels = []
@@ -75,7 +77,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate{
         ballNode = SKShapeNode.init(circleOfRadius: GameConstants.ballRadius)
         timerLabel = SKLabelNode(fontNamed: "TrebuchetMS")
         playButton = SKSpriteNode(imageNamed: "playbutton")
-        world = SKShapeNode.init()
+        world = SKSpriteNode.init(imageNamed: "background-jungle-light")
         timeSinceCurrentLevel = 0
         levelIndex = 0
         levels = []
@@ -87,10 +89,9 @@ class GameScene: SKScene, SKPhysicsContactDelegate{
     override func didMove(to view: SKView) {
         if didRenderGame == nil {
             self.view?.isMultipleTouchEnabled = false
-            let bg = SKSpriteNode.init(imageNamed: "background-jungle-light")
-            bg.size = CGSize(width: self.size.width, height: self.size.height)
-            bg.zPosition = -1
-            self.addChild(bg)
+            world.size = CGSize(width: self.size.width, height: self.size.height)
+            world.zPosition = -1
+            self.addChild(world)
             
             
             let targetWidth =  view.frame.size.width > 320 ?
@@ -102,7 +103,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate{
             ballNode.fillColor = UIColor.clear
             ballNode.strokeColor = UIColor.clear
             let banana = SKSpriteNode.init(imageNamed: "banana")
-            banana.size = CGSize(width: GameConstants.ballRadius*2, height: GameConstants.ballRadius*2)
+            banana.size = CGSize(width: GameConstants.ballAppearanceRadius*2, height:GameConstants.ballAppearanceRadius*2)
             ballNode.addChild(banana)
             GameLevelConstants.levelDisplayWidth = GameConstants.ballRadius / 4 * 5
             GameLevelConstants.levelContactWidth = GameLevelConstants.levelDisplayWidth * 2
@@ -163,7 +164,6 @@ class GameScene: SKScene, SKPhysicsContactDelegate{
     func renderGame(){
         //the ball we're trying to track
         
-        addChild(world)
         isTrackingBall = false
         ballNode.zPosition = 1
         
@@ -208,7 +208,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate{
 
         shadow.run(SKAction .group([
             SKAction.scale(by: 1.5, duration: 1),
-            SKAction.fadeOut(withDuration: 1)
+            SKAction.move(by: CGVector(dx: 0, dy: 10), duration: 1)
             ])){
             shadow.removeFromParent()
         }
@@ -229,7 +229,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate{
     func animateWin(point: CGPoint){
         let dust = SKSpriteNode(texture: dustFrames[0])
         dust.position = point
-        dust.size = CGSize(width: 80, height: 80)
+        dust.size = CGSize(width: 240, height: 240)
         addChild(dust)
         dust.run(
             SKAction.sequence(
@@ -242,9 +242,9 @@ class GameScene: SKScene, SKPhysicsContactDelegate{
     }
     
     func animateLoss(){
-        self.backgroundColor = GameConstants.loseColor
+        world.color = GameConstants.loseColor
         animatingLoss = true
-        self.run(SKAction.colorize(
+        world.run(SKAction.colorize(
             with: GameConstants.backgroundColor,
             colorBlendFactor: 1,
             duration: 0.5))
@@ -290,7 +290,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate{
             addChild(shadow)
             playSound(name: "finish.wav")
             shadow.run(
-                SKAction.fadeOut(withDuration: 2)
+                SKAction.move(by: CGVector(dx: 0, dy: 10), duration: 1)
             ){
                 self.playButton.position = CGPoint(x:0, y:0)
                 shadow.removeFromParent()

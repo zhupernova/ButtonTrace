@@ -58,7 +58,7 @@ class BallLevel:GameLevel{
         let intHeight = UInt32(floor(GameLevelConstants.screenHeight/2.0-GameConstants.ballRadius))
         
         let monkey = SKSpriteNode.init(imageNamed: "monkey-button")
-        monkey.size = CGSize(width: GameConstants.ballRadius*2, height:GameConstants.ballRadius*2)
+        monkey.size = CGSize(width: GameConstants.ballAppearanceRadius*2, height:GameConstants.ballAppearanceRadius*2)
         ball.addChild(monkey)
         
         let sign1 = CGFloat((arc4random_uniform(2) == 1) ? -1 : 1)
